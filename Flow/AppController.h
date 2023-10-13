@@ -6,12 +6,14 @@
 #include "ActionResult.h"
 #include "../RandomDataGenerator/RandomDataGenerator.h"
 #include "../Matrix/Matrix.h"
+#include "../Algorithms/BruteForce.h"
 
 class AppController {
 private:
     RandomDataGenerator *randomDataGenerator = nullptr;
     RandomDataGenerator::generator *generator = nullptr;
     Matrix *matrix = nullptr;
+    BruteForce *bruteForce = nullptr;
 
 public:
     AppController();

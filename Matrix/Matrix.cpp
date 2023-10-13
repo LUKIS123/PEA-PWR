@@ -104,3 +104,7 @@ void Matrix::clearData() {
         matrix = nullptr;
     }
 }
+
+int Matrix::getSize() {
+    return size;
+}

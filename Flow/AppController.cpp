@@ -77,7 +77,7 @@ void AppController::generateMatrix() {
         std::cout << "Bad entry... Enter a NUMBER: ";
         std::cin >> size;
     }
-    std::cout << "Set max distance: ";
+    std::cout << "Set max distanceToFinish: ";
     std::cin >> maxDistanceValue;
     while (std::cin.fail()) {
         std::cin.clear();
@@ -91,6 +91,8 @@ void AppController::generateMatrix() {
 }
 
 void AppController::algorithmMenu() {
+    bruteForce = new BruteForce(matrix, matrix->getSize());
+    bruteForce->mainFun();
 
 }
 

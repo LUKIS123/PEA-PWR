@@ -16,4 +16,11 @@ add_executable(PEA_PWR main.cpp
         RandomDataGenerator/RandomDataGenerator.cpp
         RandomDataGenerator/RandomDataGenerator.h
         Flow/ConsoleView.cpp
-        Flow/ConsoleView.h)
+        Flow/ConsoleView.h
+        MeasureTime/Timer.cpp
+        MeasureTime/Timer.h
+        Algorithms/BruteForce.cpp
+        Algorithms/BruteForce.h
+        Algorithms/Utils/List.cpp
+        Algorithms/Utils/List.h
+)
