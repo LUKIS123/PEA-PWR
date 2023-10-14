@@ -1,7 +1,3 @@
-//
-// Created by lukas on 12.10.2023.
-//
-
 #ifndef PEA_PWR_LIST_H
 #define PEA_PWR_LIST_H
 
@@ -34,6 +30,8 @@ public:
     int popEnd();
 
     void displayFromFront();
+
+    void copyOf(List *list);
 
 private:
     ListElem *head = nullptr;

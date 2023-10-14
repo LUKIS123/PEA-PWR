@@ -1,7 +1,5 @@
 #include "AppController.h"
 #include <limits>
-#include <algorithm>
-#include <cctype>
 #include <string>
 #include <cmath>
 
@@ -92,8 +90,14 @@ void AppController::generateMatrix() {
 
 void AppController::algorithmMenu() {
     bruteForce = new BruteForce(matrix, matrix->getSize());
+    bruteForce->test2();
+
+    std::cout << "-----------------------------------" << std::endl;
+    delete bruteForce;
+    bruteForce = new BruteForce(matrix, matrix->getSize());
     bruteForce->mainFun();
 
+    system("PAUSE");
 }
 
 void AppController::testsMenu() {

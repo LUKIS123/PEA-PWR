@@ -19,6 +19,7 @@ ActionResult::mainMenu ConsoleView::mainMenu() {
         std::cout << "Bad entry... Enter a NUMBER: ";
         std::cin >> next;
     }
+    std::cout << std::endl;
     switch (next) {
         case 1:
             return ActionResult::LOAD_DATA;

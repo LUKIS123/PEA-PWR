@@ -11,6 +11,8 @@ private:
     int matrixSize = 0;
     int distance = 0;
 
+    int d;
+
 public:
     bool *toBeVisited = nullptr;
     List *visited = nullptr;
@@ -26,9 +28,11 @@ public:
 
     void mainFun();
 
-    void
-    TSP(int n_vertices, int currentVertice, int startVertice, int hamiltonCycleSum, int helperSum, List *verticesHeap,
-        List *helperHeap, List *visited);
+    void TSP(int currentVertice, int startVertice, int &helperSum, List *verticesHeap, List *helperHeap);
+
+    void test2();
+
+    void tsp2(int start, int v, int dh, List *verticesHeap, List *helperHeap);
 
 };
 

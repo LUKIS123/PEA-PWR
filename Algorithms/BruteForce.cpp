@@ -51,39 +51,38 @@ int BruteForce::minDistanceToFinish() {
     return distanceToFinish;
 }
 
+
 void BruteForce::mainFun() {
     List *heap = new List();
     List *helper = new List();
-    visited = new List(); // do wywalenia
 
     alreadyVisited = new bool[matrixSize];
     for (int i = 0; i < matrixSize; i++) {
         alreadyVisited[i] = false;
     }
 
-    TSP(matrixSize, 0, 0, INT_MAX, 0, heap, helper, visited);
-    if (heap->getSize() == 0) {
+    distance = INT_MAX;
+    int helperSum = 0;
+    TSP(0, 0, helperSum, heap, helper);
+    if (heap->getSize() != 0) {
         heap->displayFromFront();
+        std::cout << distance << std::endl;
     } else {
         std::cout << "Lipa" << std::endl;
     }
 }
 
-void BruteForce::TSP(int n_vertices, int currentVertice, int startVertice, int hamiltonCycleSum, int helperSum,
-                     List *verticesHeap, List *helperHeap, List *visited) {
+void BruteForce::TSP(int currentVertice, int startVertice, int &helperSum, List *verticesHeap, List *helperHeap) {
+
     helperHeap->pushEnd(currentVertice);
 
-    if (matrix->getMatrix()[currentVertice][startVertice] == -1) {
-        helperHeap->popEnd();
-        return;
-    }
-    if (helperHeap->getSize() == matrixSize) {
-
+    //k2
+    if (helperHeap->getSize() == matrixSize && matrix->getMatrix()[startVertice][currentVertice] != -1) {
         //k4
         helperSum += matrix->getMatrix()[currentVertice][startVertice];
-        if (helperSum < hamiltonCycleSum) {
-            hamiltonCycleSum = helperSum;
-            verticesHeap = helperHeap;
+        if (helperSum < distance) {
+            distance = helperSum;
+            verticesHeap->copyOf(helperHeap);
 
         }
         //k8
@@ -92,23 +91,74 @@ void BruteForce::TSP(int n_vertices, int currentVertice, int startVertice, int h
         return;
     }
 
+    // k3
+    if (matrix->getMatrix()[currentVertice][startVertice] == -1) {
+        //k17
+        helperHeap->popEnd();
+        return;
+    }
+
     //k10
     alreadyVisited[currentVertice] = true;
-    for (int u; u < matrixSize; u++) {
+    for (int u = 0; u < matrixSize; u++) {
         //k12
-        if (alreadyVisited[u]) {
+        if (alreadyVisited[u] || matrix->getMatrix()[currentVertice][u] == -1) {
             continue;
         }
         helperSum += matrix->getMatrix()[currentVertice][u];
-        TSP(matrixSize, u, startVertice, hamiltonCycleSum, helperSum, verticesHeap, helperHeap, visited);
+        TSP(u, startVertice, helperSum, verticesHeap, helperHeap);
         helperSum -= matrix->getMatrix()[currentVertice][u];
     }
-
     //k16
     alreadyVisited[currentVertice] = false;
-
     // k17
     helperHeap->popEnd();
 }
 
+void BruteForce::test2() {
+    alreadyVisited = new bool[matrixSize];
+    for (int i = 0; i < matrixSize; i++) {
+        alreadyVisited[i] = false;
+    }
 
+    List *heap = new List();
+    List *helper = new List();
+    distance = INT_MAX;
+    int dh = 0;
+    int v0 = 0;
+    tsp2(v0, v0, dh, heap, helper);
+
+    heap->displayFromFront();
+    std::cout << "Best route: " << d << std::endl;
+}
+
+void BruteForce::tsp2(int start, int v, int dh, List *verticesHeap, List *helperHeap) {
+
+    int u;
+
+    helperHeap->pushEnd(v);              // zapamiętujemy na stosie bieżący wierzchołek
+
+    if (helperHeap->getSize() < matrixSize)                  // jeśli brak ścieżki Hamiltona, to jej szukamy
+    {
+        alreadyVisited[v] = true;          // Oznaczamy bieżący wierzchołek jako odwiedzony
+        for (u = 0; u < matrixSize; u++)       // Przeglądamy sąsiadów wierzchołka v
+            if (matrix->getMatrix()[v][u] != -1 && !alreadyVisited[u]) // Szukamy nieodwiedzonego jeszcze sąsiada
+            {
+                dh += matrix->getMatrix()[v][u];        // Dodajemy wagę krawędzi v-u do sumy
+                tsp2(start, u, dh, verticesHeap,
+                     helperHeap);                 // Rekurencyjnie wywołujemy szukanie cyklu Hamiltona
+                dh -= matrix->getMatrix()[v][u];        // Usuwamy wagę krawędzi z sumy
+            }
+        alreadyVisited[v] = false;         // Zwalniamy bieżący wierzchołek
+    } else if (matrix->getMatrix()[start][v] != -1)         // Jeśli znaleziona ścieżka jest cyklem Hamiltona
+    {
+        dh += matrix->getMatrix()[v][start];           // to sprawdzamy, czy ma najmniejszą sumę wag
+        if (dh < d)                   // Jeśli tak,
+        {
+            d = dh;                      // To zapamiętujemy tę sumę
+            verticesHeap->copyOf(helperHeap); // oraz kopiujemy stos Sh do S
+        }
+        dh -= matrix->getMatrix()[v][start];           // Usuwamy wagę krawędzi v-v0 z sumy
+    }
+    helperHeap->popEnd();                         // Usuwamy bieżący wierzchołek ze ścieżki
+}

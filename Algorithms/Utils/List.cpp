@@ -1,7 +1,3 @@
-//
-// Created by lukas on 12.10.2023.
-//
-
 #include "List.h"
 
 List::~List() {
@@ -84,10 +80,8 @@ List::ListElem *List::getByIndex(int index) {
 
 int List::popEnd() {
     if (head == nullptr) {
-//        std::cout << "List is empty! ";
         return NULL;
     }
-
     size--;
     int value = tail->data;
 
@@ -104,5 +98,16 @@ int List::popEnd() {
     tail = previous;
 
     return value;
+}
 
+void List::copyOf(List *list) {
+    if (size != 0) {
+        removeAll();
+    }
+    ListElem *elem = list->getHead();
+    while (elem != nullptr) {
+        pushEnd(elem->data);
+        elem = elem->next;
+        size++;
+    }
 }
