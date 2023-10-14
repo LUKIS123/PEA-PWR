@@ -51,6 +51,7 @@ int BruteForce::minDistanceToFinish() {
     return distanceToFinish;
 }
 
+//--------------------------------------------------------------------------------------------------------------------
 
 void BruteForce::mainFun() {
     List *heap = new List();
@@ -94,8 +95,10 @@ void BruteForce::TSP(int currentVertice, int startVertice, int &helperSum, List 
     // k3
     if (matrix->getMatrix()[currentVertice][startVertice] == -1) {
         //k17
-        helperHeap->popEnd();
-        return;
+        if (currentVertice != startVertice) {
+            helperHeap->popEnd();
+            return;
+        }
     }
 
     //k10
