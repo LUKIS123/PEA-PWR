@@ -12,7 +12,12 @@ public:
         RUN_TESTS = 5,
         BACK_TO_MENU = 6
     };
-
+    enum algorithmsMenu {
+        END_ALGORITHMS_MENU = 0,
+        BACK_TO_ALGORITHMS_MENU = 1,
+        RUN_BRUTE_FORCE = 2,
+        DISPLAY_LATEST_RESULTS = 3
+    };
 };
 
 

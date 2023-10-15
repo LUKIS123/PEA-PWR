@@ -109,6 +109,19 @@ void BruteForce::TSP(int currentVertice, int startVertice, int &helperSum, List 
             continue;
         }
         helperSum += matrix->getMatrix()[currentVertice][u];
+
+        // optymalizacja : There is no added value in extending a path that is already above the current minimal distance
+        if (helperSum > distance) {
+            helperSum -= matrix->getMatrix()[currentVertice][u];
+            continue;
+        }
+        // opt 2
+//        if (helperSum + minDistanceToFinish(todoPoints) > distance) {
+//            helperSum -= matrix->getMatrix()[currentVertice][u];
+//            continue;
+//        }
+        // optymalizacja
+
         TSP(u, startVertice, helperSum, verticesHeap, helperHeap);
         helperSum -= matrix->getMatrix()[currentVertice][u];
     }
@@ -165,3 +178,69 @@ void BruteForce::tsp2(int start, int v, int dh, List *verticesHeap, List *helper
     }
     helperHeap->popEnd();                         // Usuwamy bieżący wierzchołek ze ścieżki
 }
+
+
+//void BruteForce::mainFun() {
+//    List *heap = new List();
+//    List *helper = new List();
+//
+//    alreadyVisited = new bool[matrixSize];
+//    for (int i = 0; i < matrixSize; i++) {
+//        alreadyVisited[i] = false;
+//    }
+//
+//    distance = INT_MAX;
+//    int helperSum = 0;
+//    TSP(0, 0, helperSum, heap, helper);
+//    if (heap->getSize() != 0) {
+//        heap->displayFromFront();
+//        std::cout << distance << std::endl;
+//    } else {
+//        std::cout << "Lipa" << std::endl;
+//    }
+//}
+//
+//void BruteForce::TSP(int currentVertice, int startVertice, int &helperSum, List *verticesHeap, List *helperHeap) {
+//
+//    helperHeap->pushEnd(currentVertice);
+//
+//    //k2
+//    if (helperHeap->getSize() == matrixSize && matrix->getMatrix()[startVertice][currentVertice] != -1) {
+//        //k4
+//        helperSum += matrix->getMatrix()[currentVertice][startVertice];
+//        if (helperSum < distance) {
+//            distance = helperSum;
+//            verticesHeap->copyOf(helperHeap);
+//
+//        }
+//        //k8
+//        helperSum -= matrix->getMatrix()[currentVertice][startVertice];
+//        helperHeap->popEnd();
+//        return;
+//    }
+//
+//    // k3
+//    if (matrix->getMatrix()[currentVertice][startVertice] == -1) {
+//        //k17
+//        if (currentVertice != startVertice) {
+//            helperHeap->popEnd();
+//            return;
+//        }
+//    }
+//
+//    //k10
+//    alreadyVisited[currentVertice] = true;
+//    for (int u = 0; u < matrixSize; u++) {
+//        //k12
+//        if (alreadyVisited[u] || matrix->getMatrix()[currentVertice][u] == -1) {
+//            continue;
+//        }
+//        helperSum += matrix->getMatrix()[currentVertice][u];
+//        TSP(u, startVertice, helperSum, verticesHeap, helperHeap);
+//        helperSum -= matrix->getMatrix()[currentVertice][u];
+//    }
+//    //k16
+//    alreadyVisited[currentVertice] = false;
+//    // k17
+//    helperHeap->popEnd();
+//}

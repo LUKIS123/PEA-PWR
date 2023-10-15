@@ -13,6 +13,8 @@ public:
     virtual ~ConsoleView() = default;
 
     static ActionResult::mainMenu mainMenu();
+
+    static ActionResult::algorithmsMenu algorithmsMenu();
 };
 
 

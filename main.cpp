@@ -9,7 +9,6 @@ int main() {
 
     auto *appController = new AppController();
     appController->mainIndex();
-    system("PAUSE");
     delete appController;
 
     return 0;

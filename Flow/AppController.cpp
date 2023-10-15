@@ -89,6 +89,23 @@ void AppController::generateMatrix() {
 }
 
 void AppController::algorithmMenu() {
+    ActionResult::algorithmsMenu status = ActionResult::BACK_TO_ALGORITHMS_MENU;
+    while (status != ActionResult::END_ALGORITHMS_MENU) {
+        switch (status) {
+            case ActionResult::BACK_TO_ALGORITHMS_MENU:
+                status = ConsoleView::algorithmsMenu();
+                break;
+            case ActionResult::RUN_BRUTE_FORCE:
+                break;
+            case ActionResult::DISPLAY_LATEST_RESULTS:
+                break;
+            case ActionResult::END_ALGORITHMS_MENU:
+                break;
+        }
+    }
+
+    // TODO dokonczyc
+    delete bruteForce;
     bruteForce = new BruteForce(matrix, matrix->getSize());
     bruteForce->test2();
 
