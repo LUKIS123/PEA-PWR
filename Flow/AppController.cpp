@@ -7,8 +7,8 @@ AppController::AppController() {
     randomDataGenerator = new RandomDataGenerator();
     generator = new RandomDataGenerator::generator();
     generator->setGen();
-
     matrix = new Matrix();
+    bruteForce = new BruteForce();
 }
 
 AppController::~AppController() {
@@ -96,24 +96,38 @@ void AppController::algorithmMenu() {
                 status = ConsoleView::algorithmsMenu();
                 break;
             case ActionResult::RUN_BRUTE_FORCE:
+                runBruteForce();
+                status = ActionResult::BACK_TO_ALGORITHMS_MENU;
                 break;
             case ActionResult::DISPLAY_LATEST_RESULTS:
+                displayLatestResults();
+                status = ActionResult::BACK_TO_ALGORITHMS_MENU;
                 break;
             case ActionResult::END_ALGORITHMS_MENU:
                 break;
         }
     }
+}
 
-    // TODO dokonczyc
-    delete bruteForce;
-    bruteForce = new BruteForce(matrix, matrix->getSize());
-    bruteForce->test2();
+void AppController::runBruteForce() {
+//    delete bruteForce;
+//    bruteForce = new BruteForce(matrix, matrix->getSize());
+//    bruteForce->test2();
+//    std::cout << "-----------------------------------" << std::endl;
 
-    std::cout << "-----------------------------------" << std::endl;
-    delete bruteForce;
-    bruteForce = new BruteForce(matrix, matrix->getSize());
-    bruteForce->mainFun();
+    bruteForce->clearData();
+    long long start = Timer::read_QPC();
+    bruteForce->mainFun(matrix, matrix->getSize());
+    long long end = Timer::read_QPC();
+    bruteForce->displayLatestResults();
+    latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
+    std::cout << "Timer: " << latestTimerResult << "us" << std::endl;
+    system("PAUSE");
+}
 
+void AppController::displayLatestResults() {
+    bruteForce->displayLatestResults();
+    std::cout << "Timer: " << latestTimerResult << "us" << std::endl;
     system("PAUSE");
 }
 

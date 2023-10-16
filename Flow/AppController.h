@@ -5,6 +5,7 @@
 #include "ConsoleView.h"
 #include "ActionResult.h"
 #include "../RandomDataGenerator/RandomDataGenerator.h"
+#include "../MeasureTime/Timer.h"
 #include "../Matrix/Matrix.h"
 #include "../Algorithms/BruteForce.h"
 
@@ -14,6 +15,8 @@ private:
     RandomDataGenerator::generator *generator = nullptr;
     Matrix *matrix = nullptr;
     BruteForce *bruteForce = nullptr;
+
+    double latestTimerResult = 0.0;
 
 public:
     AppController();
@@ -31,6 +34,10 @@ public:
     void algorithmMenu();
 
     void testsMenu();
+
+    void runBruteForce();
+
+    void displayLatestResults();
 };
 
 
