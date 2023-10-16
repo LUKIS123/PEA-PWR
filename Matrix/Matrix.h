@@ -13,8 +13,6 @@ public:
     bool testing = false;
     bool exists = false;
     int distanceValueLimit = 100;
-    int calculatedDistance = INT_MAX;
-
 
     Matrix();
 

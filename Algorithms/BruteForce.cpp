@@ -74,90 +74,76 @@ void BruteForce::mainFun(Matrix *matrix, int matrixSize) {
     this->matrixSize = matrixSize;
     this->matrix = matrix;
 
-//    List *heap = new List();
-//    List *helper = new List();
-
     alreadyVisited = new bool[matrixSize];
     for (int i = 0; i < matrixSize; i++) {
         alreadyVisited[i] = false;
     }
-
     distance = INT_MAX;
     int helperSum = 0;
 
-    //TSP(0, 0, helperSum, heap, helper);
-    TSP_POP(0, 0, helperSum);
-
-//    if (heap->getSize() != 0) {
-//        heap->displayFromFront();
-//        std::cout << distance << std::endl;
-//    } else {
-//        std::cout << "Lipa" << std::endl;
-//    }
-//    std::cout << "test" << std::endl;
+    TSP(0, 0, helperSum);
 }
 
-void BruteForce::TSP(int currentVertice, int startVertice, int &helperSum, List *verticesHeap, List *helperHeap) {
-
-    helperHeap->pushEnd(currentVertice);
-
+void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
+    temporaryStack->pushEnd(currentVertex);
     //k2
-    if (helperHeap->getSize() == matrixSize && matrix->getMatrix()[startVertice][currentVertice] != -1) {
+    if (temporaryStack->getSize() == matrixSize && matrix->getMatrix()[startVertex][currentVertex] != -1) {
         //k4
-        helperSum += matrix->getMatrix()[currentVertice][startVertice];
+        helperSum += matrix->getMatrix()[currentVertex][startVertex];
         if (helperSum < distance) {
             distance = helperSum;
-            verticesHeap->copyOf(helperHeap);
+            stack->copyOf(temporaryStack);
 
         }
         //k8
-        helperSum -= matrix->getMatrix()[currentVertice][startVertice];
-        helperHeap->popEnd();
+        helperSum -= matrix->getMatrix()[currentVertex][startVertex];
+        temporaryStack->popEnd();
         return;
     }
-
     // k3
-    if (matrix->getMatrix()[currentVertice][startVertice] == -1) {
+    if (matrix->getMatrix()[currentVertex][startVertex] == -1) {
         //k17
-        if (currentVertice != startVertice) {
-            helperHeap->popEnd();
+        if (currentVertex != startVertex) {
+            temporaryStack->popEnd();
             return;
         }
     }
-
     //k10
-    alreadyVisited[currentVertice] = true;
+    alreadyVisited[currentVertex] = true;
     for (int u = 0; u < matrixSize; u++) {
         //k12
-        if (alreadyVisited[u] || matrix->getMatrix()[currentVertice][u] == -1) {
+        if (alreadyVisited[u] || matrix->getMatrix()[currentVertex][u] == -1) {
             continue;
         }
-        helperSum += matrix->getMatrix()[currentVertice][u];
+        helperSum += matrix->getMatrix()[currentVertex][u];
 
         // optymalizacja : There is no added value in extending a path that is already above the current minimal distance
         if (helperSum > distance) {
-            helperSum -= matrix->getMatrix()[currentVertice][u];
+            helperSum -= matrix->getMatrix()[currentVertex][u];
             continue;
         }
         // opt 2
 //        if (helperSum + minDistanceToFinish(todoPoints) > distance) {
-//            helperSum -= matrix->getMatrix()[currentVertice][u];
+//            helperSum -= matrix->getMatrix()[currentVertex][u];
 //            continue;
 //        }
         // optymalizacja
 
-        TSP(u, startVertice, helperSum, verticesHeap, helperHeap);
-        helperSum -= matrix->getMatrix()[currentVertice][u];
+        TSP(u, startVertex, helperSum);
+        helperSum -= matrix->getMatrix()[currentVertex][u];
     }
     //k16
-    alreadyVisited[currentVertice] = false;
+    alreadyVisited[currentVertex] = false;
     // k17
-    helperHeap->popEnd();
+    temporaryStack->popEnd();
 }
 
 //--------------------------------------------------------------------------------------------------------------------
 
-void BruteForce::test2() {
+void BruteForce::test2(Matrix *matrix, int matrixSize) {
+    this->matrixSize = matrixSize;
+    this->matrix = matrix;
+
     alreadyVisited = new bool[matrixSize];
     for (int i = 0; i < matrixSize; i++) {
         alreadyVisited[i] = false;
@@ -165,7 +151,7 @@ void BruteForce::test2() {
 
     List *heap = new List();
     List *helper = new List();
-    distance = INT_MAX;
+    d = INT_MAX;
     int dh = 0;
     int v0 = 0;
     tsp2(v0, v0, dh, heap, helper);
@@ -204,127 +190,3 @@ void BruteForce::tsp2(int start, int v, int dh, List *verticesHeap, List *helper
     }
     helperHeap->popEnd();                         // Usuwamy bieżący wierzchołek ze ścieżki
 }
-
-void BruteForce::TSP_POP(int currentVertex, int startVertex, int &helperSum) {
-
-    temporaryStack->pushEnd(currentVertex);
-
-    //k2
-    if (temporaryStack->getSize() == matrixSize && matrix->getMatrix()[startVertex][currentVertex] != -1) {
-        //k4
-        helperSum += matrix->getMatrix()[currentVertex][startVertex];
-        if (helperSum < distance) {
-            distance = helperSum;
-            stack->copyOf(temporaryStack);
-
-        }
-        //k8
-        helperSum -= matrix->getMatrix()[currentVertex][startVertex];
-        temporaryStack->popEnd();
-        return;
-    }
-
-    // k3
-    if (matrix->getMatrix()[currentVertex][startVertex] == -1) {
-        //k17
-        if (currentVertex != startVertex) {
-            temporaryStack->popEnd();
-            return;
-        }
-    }
-
-    //k10
-    alreadyVisited[currentVertex] = true;
-    for (int u = 0; u < matrixSize; u++) {
-        //k12
-        if (alreadyVisited[u] || matrix->getMatrix()[currentVertex][u] == -1) {
-            continue;
-        }
-        helperSum += matrix->getMatrix()[currentVertex][u];
-
-        // optymalizacja : There is no added value in extending a path that is already above the current minimal distance
-        if (helperSum > distance) {
-            helperSum -= matrix->getMatrix()[currentVertex][u];
-            continue;
-        }
-        // opt 2
-//        if (helperSum + minDistanceToFinish(todoPoints) > distance) {
-//            helperSum -= matrix->getMatrix()[currentVertex][u];
-//            continue;
-//        }
-        // optymalizacja
-
-        TSP(u, startVertex, helperSum, stack, temporaryStack);
-        helperSum -= matrix->getMatrix()[currentVertex][u];
-    }
-    //k16
-    alreadyVisited[currentVertex] = false;
-    // k17
-    temporaryStack->popEnd();
-}
-
-
-//void BruteForce::mainFun() {
-//    List *heap = new List();
-//    List *helper = new List();
-//
-//    alreadyVisited = new bool[matrixSize];
-//    for (int i = 0; i < matrixSize; i++) {
-//        alreadyVisited[i] = false;
-//    }
-//
-//    distance = INT_MAX;
-//    int helperSum = 0;
-//    TSP(0, 0, helperSum, heap, helper);
-//    if (heap->getSize() != 0) {
-//        heap->displayFromFront();
-//        std::cout << distance << std::endl;
-//    } else {
-//        std::cout << "Lipa" << std::endl;
-//    }
-//}
-//
-//void BruteForce::TSP(int currentVertice, int startVertice, int &helperSum, List *verticesHeap, List *helperHeap) {
-//
-//    helperHeap->pushEnd(currentVertice);
-//
-//    //k2
-//    if (helperHeap->getSize() == matrixSize && matrix->getMatrix()[startVertice][currentVertice] != -1) {
-//        //k4
-//        helperSum += matrix->getMatrix()[currentVertice][startVertice];
-//        if (helperSum < distance) {
-//            distance = helperSum;
-//            verticesHeap->copyOf(helperHeap);
-//
-//        }
-//        //k8
-//        helperSum -= matrix->getMatrix()[currentVertice][startVertice];
-//        helperHeap->popEnd();
-//        return;
-//    }
-//
-//    // k3
-//    if (matrix->getMatrix()[currentVertice][startVertice] == -1) {
-//        //k17
-//        if (currentVertice != startVertice) {
-//            helperHeap->popEnd();
-//            return;
-//        }
-//    }
-//
-//    //k10
-//    alreadyVisited[currentVertice] = true;
-//    for (int u = 0; u < matrixSize; u++) {
-//        //k12
-//        if (alreadyVisited[u] || matrix->getMatrix()[currentVertice][u] == -1) {
-//            continue;
-//        }
-//        helperSum += matrix->getMatrix()[currentVertice][u];
-//        TSP(u, startVertice, helperSum, verticesHeap, helperHeap);
-//        helperSum -= matrix->getMatrix()[currentVertice][u];
-//    }
-//    //k16
-//    alreadyVisited[currentVertice] = false;
-//    // k17
-//    helperHeap->popEnd();
-//}

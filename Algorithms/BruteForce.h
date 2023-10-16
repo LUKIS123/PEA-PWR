@@ -35,11 +35,9 @@ public:
 
     void mainFun(Matrix *matrix, int matrixSize);
 
-    void TSP(int currentVertice, int startVertice, int &helperSum, List *verticesHeap, List *helperHeap);
+    void TSP(int currentVertex, int startVertex, int &helperSum);
 
-    void TSP_POP(int currentVertex, int startVertex, int &helperSum);
-
-    void test2();
+    void test2(Matrix *matrix, int matrixSize);
 
     void tsp2(int start, int v, int dh, List *verticesHeap, List *helperHeap);
 };

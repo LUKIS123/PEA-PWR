@@ -110,11 +110,6 @@ void AppController::algorithmMenu() {
 }
 
 void AppController::runBruteForce() {
-//    delete bruteForce;
-//    bruteForce = new BruteForce(matrix, matrix->getSize());
-//    bruteForce->test2();
-//    std::cout << "-----------------------------------" << std::endl;
-
     bruteForce->clearData();
     long long start = Timer::read_QPC();
     bruteForce->mainFun(matrix, matrix->getSize());
@@ -122,6 +117,11 @@ void AppController::runBruteForce() {
     bruteForce->displayLatestResults();
     latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
     std::cout << "Timer: " << latestTimerResult << "us" << std::endl;
+
+    std::cout << "-----------------------------------" << std::endl;
+    bruteForce->clearData();
+    bruteForce->test2(matrix, matrix->getSize());
+
     system("PAUSE");
 }
 
