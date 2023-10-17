@@ -116,18 +116,23 @@ void AppController::runBruteForce() {
     long long end = Timer::read_QPC();
     bruteForce->displayLatestResults();
     latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
-    std::cout << "Timer: " << latestTimerResult << "us" << std::endl;
+    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
 
     std::cout << "-----------------------------------" << std::endl;
+
     bruteForce->clearData();
+    start = Timer::read_QPC();
     bruteForce->test2(matrix, matrix->getSize());
+    end = Timer::read_QPC();
+    double testResult = Timer::getMicroSecondsElapsed(start, end);
+    std::cout << "Timer: " << testResult << " us" << std::endl;
 
     system("PAUSE");
 }
 
 void AppController::displayLatestResults() {
     bruteForce->displayLatestResults();
-    std::cout << "Timer: " << latestTimerResult << "us" << std::endl;
+    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
     system("PAUSE");
 }
 

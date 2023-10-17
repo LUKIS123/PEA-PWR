@@ -43,7 +43,7 @@ void BruteForce::branch(bool *toBeVisitedVertices, int dist, int currentMinDist)
             if (dist > currentMinDist) {
                 continue;
             }
-            if (dist + minDistanceToFinish() > currentMinDist) {
+            if (dist + minDistanceToFinish(nullptr) > currentMinDist) {
                 continue;
             }
 
@@ -53,17 +53,28 @@ void BruteForce::branch(bool *toBeVisitedVertices, int dist, int currentMinDist)
 
 }
 
-int BruteForce::minDistanceToFinish() {
+//--------------------------------------------------------------------------------------------------------------------
+
+int BruteForce::minDistanceToFinish(bool *visited) {
     int distanceToFinish = 0;
     for (int i = 0; i < matrixSize; i++) {
-        int d = INT_MAX;
+        int dist = INT_MAX;
+
+        if (visited[i]) {
+            continue;
+        }
+
         for (int j = 0; j < matrixSize; j++) {
             if (i == j) {
                 continue;
             }
-            d = std::min(d, matrix->getMatrix()[i][j]);
+//            if (visited[j]) {
+//                continue;
+//            }
+            dist = std::min(dist, matrix->getMatrix()[i][j]);
         }
-        distanceToFinish += d;
+
+        distanceToFinish += dist;
     }
     return distanceToFinish;
 }
@@ -122,11 +133,11 @@ void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
             helperSum -= matrix->getMatrix()[currentVertex][u];
             continue;
         }
-        // opt 2
-//        if (helperSum + minDistanceToFinish(todoPoints) > distance) {
-//            helperSum -= matrix->getMatrix()[currentVertex][u];
-//            continue;
-//        }
+        // opt 2 : Further improvement would be to keep track of the minimal distance you would need to add in order to finish the current path
+        if ((helperSum + minDistanceToFinish(alreadyVisited)) > distance) {
+            helperSum -= matrix->getMatrix()[currentVertex][u];
+            continue;
+        }
         // optymalizacja
 
         TSP(u, startVertex, helperSum);

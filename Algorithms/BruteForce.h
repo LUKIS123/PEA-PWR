@@ -31,7 +31,7 @@ public:
 
     void branch(bool *toBeVisitedVertices, int distance, int currentMinDist);
 
-    int minDistanceToFinish();
+    int minDistanceToFinish(bool *visited);
 
     void mainFun(Matrix *matrix, int matrixSize);
 
