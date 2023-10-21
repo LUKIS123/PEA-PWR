@@ -4,8 +4,10 @@
 #include "iostream"
 #include "ConsoleView.h"
 #include "ActionResult.h"
+#include "LatestAlgorithmRun.h"
 #include "../RandomDataGenerator/RandomDataGenerator.h"
 #include "../MeasureTime/Timer.h"
+#include "../Tests/AutomaticTests.h"
 #include "../Matrix/Matrix.h"
 #include "../Algorithms/BruteForce.h"
 
@@ -13,9 +15,11 @@ class AppController {
 private:
     RandomDataGenerator *randomDataGenerator = nullptr;
     RandomDataGenerator::generator *generator = nullptr;
+    AutomaticTests *automaticTests = nullptr;
     Matrix *matrix = nullptr;
     BruteForce *bruteForce = nullptr;
 
+    LatestAlgorithm latestRun = LatestAlgorithm::NONE;
     double latestTimerResult = 0.0;
 
 public:
@@ -35,7 +39,7 @@ public:
 
     void testsMenu();
 
-    void runBruteForce();
+    void runBruteForce(bool ifOptimizedAlgorithm);
 
     void displayLatestResults();
 };

@@ -14,3 +14,17 @@ double Timer::getMicroSecondsElapsed(long long int start, long long int end) {
     QueryPerformanceFrequency((LARGE_INTEGER *) &frequency);
     return ((1000000.0 * elapsed) / frequency);
 }
+
+double Timer::getMilliSecondsElapsed(long long int start, long long int end) {
+    long long int elapsed, frequency;
+    elapsed = end - start;
+    QueryPerformanceFrequency((LARGE_INTEGER *) &frequency);
+    return ((1000.0 * elapsed) / frequency);
+}
+
+double Timer::getSecondsElapsed(long long int start, long long int end) {
+    long long int elapsed, frequency;
+    elapsed = end - start;
+    QueryPerformanceFrequency((LARGE_INTEGER *) &frequency);
+    return (elapsed / frequency);
+}

@@ -24,6 +24,8 @@ public:
 
     void generate(int newSize, RandomDataGenerator::generator *numberGenerator);
 
+    void generateAnew(RandomDataGenerator::generator *numberGenerator);
+
     void loadFromFile(const std::string &filename);
 
     void displayMatrix();

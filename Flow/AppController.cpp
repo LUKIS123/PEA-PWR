@@ -9,6 +9,9 @@ AppController::AppController() {
     generator->setGen();
     matrix = new Matrix();
     bruteForce = new BruteForce();
+
+    // Testy
+    automaticTests = new AutomaticTests(randomDataGenerator, generator, matrix, bruteForce);
 }
 
 AppController::~AppController() {
@@ -96,8 +99,12 @@ void AppController::algorithmMenu() {
                 status = ConsoleView::algorithmsMenu();
                 break;
             case ActionResult::RUN_BRUTE_FORCE:
-                runBruteForce();
+                runBruteForce(false);
                 status = ActionResult::BACK_TO_ALGORITHMS_MENU;
+                runBruteForce(true);
+                status = ActionResult::BACK_TO_ALGORITHMS_MENU;
+                break;
+            case ActionResult::RUN_BRUTE_FORCE_OPT:
                 break;
             case ActionResult::DISPLAY_LATEST_RESULTS:
                 displayLatestResults();
@@ -109,21 +116,27 @@ void AppController::algorithmMenu() {
     }
 }
 
-void AppController::runBruteForce() {
+void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
     bruteForce->clearData();
-    long long start = Timer::read_QPC();
-    bruteForce->mainFun(matrix, matrix->getSize());
-    long long end = Timer::read_QPC();
-    bruteForce->displayLatestResults();
-    latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
+    if (ifOptimizedAlgorithm) {
+        long long start = Timer::read_QPC();
+        bruteForce->mainFun(matrix, matrix->getSize());
+        long long end = Timer::read_QPC();
+        bruteForce->displayLatestResults();
+        latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
+        latestRun = LatestAlgorithm::BRUTE_FORCE_OPT;
+    } else {
+
+        latestRun = LatestAlgorithm::BRUTE_FORCE;
+    }
+
     std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
 
     std::cout << "-----------------------------------" << std::endl;
-
     bruteForce->clearData();
-    start = Timer::read_QPC();
+    long long start = Timer::read_QPC();
     bruteForce->test2(matrix, matrix->getSize());
-    end = Timer::read_QPC();
+    long long end = Timer::read_QPC();
     double testResult = Timer::getMicroSecondsElapsed(start, end);
     std::cout << "Timer: " << testResult << " us" << std::endl;
 
@@ -131,11 +144,14 @@ void AppController::runBruteForce() {
 }
 
 void AppController::displayLatestResults() {
-    bruteForce->displayLatestResults();
-    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    if (latestRun == LatestAlgorithm::BRUTE_FORCE_OPT || latestRun == LatestAlgorithm::BRUTE_FORCE) {
+        bruteForce->displayLatestResults();
+        std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    }
     system("PAUSE");
 }
 
 void AppController::testsMenu() {
-
+    automaticTests->initialize();
+    automaticTests->menu();
 }

@@ -23,4 +23,7 @@ add_executable(PEA_PWR main.cpp
         Algorithms/BruteForce.h
         Algorithms/Utils/List.cpp
         Algorithms/Utils/List.h
+        Tests/AutomaticTests.cpp
+        Tests/AutomaticTests.h
+        Flow/LatestAlgorithmRun.h
 )

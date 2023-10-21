@@ -15,6 +15,8 @@ public:
     static ActionResult::mainMenu mainMenu();
 
     static ActionResult::algorithmsMenu algorithmsMenu();
+
+    static ActionResult::automaticTestsMenu automaticTestsMenu();
 };
 
 

@@ -7,7 +7,7 @@
 
 class BruteForce {
 private:
-    Matrix *matrix = nullptr;
+    int **matrix = nullptr;
     int matrixSize = 0;
     int distance = 0;
 

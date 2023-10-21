@@ -36,6 +36,25 @@ void Matrix::generate(int newSize, RandomDataGenerator::generator *numberGenerat
     }
 }
 
+void Matrix::generateAnew(RandomDataGenerator::generator *numberGenerator) {
+    if (!exists) {
+        return;
+    }
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (i == j) {
+                matrix[i][j] = -1;
+            } else {
+                matrix[i][j] = numberGenerator->getRandomNum();
+            }
+        }
+    }
+    exists = true;
+    if (!testing) {
+        displayMatrix();
+    }
+}
+
 // Ladowanie macierzy z pliku
 void Matrix::loadFromFile(const std::string &filename) {
     clearData();
