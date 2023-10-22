@@ -26,4 +26,8 @@ add_executable(PEA_PWR main.cpp
         Tests/AutomaticTests.cpp
         Tests/AutomaticTests.h
         Flow/LatestAlgorithmRun.h
+        Algorithms/BranchAndBound.h
+        Algorithms/BranchAndBound.cpp
+        Algorithms/Utils/BranchAndBoundNode.h
+        Algorithms/Utils/BranchAndBoundNode.cpp
 )

@@ -30,54 +30,7 @@ void BruteForce::displayLatestResults() {
     std::cout << "Distance: " << distance << std::endl;
 }
 
-void BruteForce::branch(bool *toBeVisitedVertices, int dist, int currentMinDist) {
-    if (visited->getSize() == matrixSize) {
-
-    } else {
-        for (int i = 0; i < matrixSize; i++) {
-            visited->pushEnd(i);
-            if (visited->getSize() > 1) {
-                dist += matrix[visited->getByIndex(visited->getSize() - 2)->data]
-                [visited->getByIndex(visited->getSize() - 1)->data];
-            }
-            if (dist > currentMinDist) {
-                continue;
-            }
-            if (dist + minDistanceToFinish(nullptr) > currentMinDist) {
-                continue;
-            }
-
-
-        }
-    }
-
-}
-
-//--------------------------------------------------------------------------------------------------------------------
-
-int BruteForce::minDistanceToFinish(bool *visited) {
-    int distanceToFinish = 0;
-    for (int i = 0; i < matrixSize; i++) {
-        int dist = INT_MAX;
-        if (visited[i]) {
-            continue;
-        }
-
-        for (int j = 0; j < matrixSize; j++) {
-            if (i == j) {
-                continue;
-            }
-            dist = std::min(dist, matrix[i][j]);
-        }
-
-        distanceToFinish += dist;
-    }
-    return distanceToFinish;
-}
-
-//--------------------------------------------------------------------------------------------------------------------
-
-void BruteForce::mainFun(Matrix *matrix, int matrixSize) {
+void BruteForce::mainFun(Matrix *matrix, int matrixSize, bool runOptimized) {
     this->matrixSize = matrixSize;
     this->matrix = matrix->getMatrix();
 
@@ -88,10 +41,14 @@ void BruteForce::mainFun(Matrix *matrix, int matrixSize) {
     distance = INT_MAX;
     int helperSum = 0;
 
-    TSP(0, 0, helperSum);
+    if (runOptimized) {
+        TSP_OPT(0, 0, helperSum);
+    } else {
+        TSP(0, 0, helperSum);
+    }
 }
 
-void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
+void BruteForce::TSP_OPT(int currentVertex, int startVertex, int &helperSum) {
     temporaryStack->pushEnd(currentVertex);
     //k2
     if (temporaryStack->getSize() == matrixSize && matrix[startVertex][currentVertex] != -1) {
@@ -100,7 +57,7 @@ void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
         if (helperSum < distance) {
             distance = helperSum;
             stack->copyOf(temporaryStack);
-
+            stack->pushEnd(startVertex);
         }
         //k8
         helperSum -= matrix[currentVertex][startVertex];
@@ -136,7 +93,70 @@ void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
         }
         // optymalizacja
 
+        TSP_OPT(u, startVertex, helperSum);
+        helperSum -= matrix[currentVertex][u];
+    }
+    //k16
+    alreadyVisited[currentVertex] = false;
+    // k17
+    temporaryStack->popEnd();
+}
+
+int BruteForce::minDistanceToFinish(bool *visited) {
+    int distanceToFinish = 0;
+    for (int i = 0; i < matrixSize; i++) {
+        int dist = INT_MAX;
+        if (visited[i]) {
+            continue;
+        }
+
+        for (int j = 0; j < matrixSize; j++) {
+            if (i == j) {
+                continue;
+            }
+            dist = std::min(dist, matrix[i][j]);
+        }
+
+        distanceToFinish += dist;
+    }
+    return distanceToFinish;
+}
+
+void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
+    temporaryStack->pushEnd(currentVertex);
+    //k2
+    if (temporaryStack->getSize() == matrixSize && matrix[startVertex][currentVertex] != -1) {
+        //k4
+        helperSum += matrix[currentVertex][startVertex];
+        if (helperSum < distance) {
+            distance = helperSum;
+            stack->copyOf(temporaryStack);
+            stack->pushEnd(startVertex);
+        }
+        //k8
+        helperSum -= matrix[currentVertex][startVertex];
+        temporaryStack->popEnd();
+        return;
+    }
+    // k3 => TO JEST CHYBA NIEPOTRZEBNE
+    if (matrix[currentVertex][startVertex] == -1) {
+        //k17
+        if (currentVertex != startVertex) {
+            temporaryStack->popEnd();
+            return;
+        }
+    }
+    //k10
+    alreadyVisited[currentVertex] = true;
+    for (int u = 0; u < matrixSize; u++) {
+        //k12
+        if (alreadyVisited[u] || matrix[currentVertex][u] == -1) {
+            continue;
+        }
+        helperSum += matrix[currentVertex][u];
+
         TSP(u, startVertex, helperSum);
+
         helperSum -= matrix[currentVertex][u];
     }
     //k16

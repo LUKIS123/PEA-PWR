@@ -9,6 +9,7 @@ AppController::AppController() {
     generator->setGen();
     matrix = new Matrix();
     bruteForce = new BruteForce();
+    branchAndBound = new BranchAndBound();
 
     // Testy
     automaticTests = new AutomaticTests(randomDataGenerator, generator, matrix, bruteForce);
@@ -92,6 +93,11 @@ void AppController::generateMatrix() {
 }
 
 void AppController::algorithmMenu() {
+    if (matrix->getSize() == 0) {
+        std::cout << "Matrix is empty!";
+        system("PAUSE");
+        return;
+    }
     ActionResult::algorithmsMenu status = ActionResult::BACK_TO_ALGORITHMS_MENU;
     while (status != ActionResult::END_ALGORITHMS_MENU) {
         switch (status) {
@@ -101,10 +107,14 @@ void AppController::algorithmMenu() {
             case ActionResult::RUN_BRUTE_FORCE:
                 runBruteForce(false);
                 status = ActionResult::BACK_TO_ALGORITHMS_MENU;
+                break;
+            case ActionResult::RUN_BRUTE_FORCE_OPT:
                 runBruteForce(true);
                 status = ActionResult::BACK_TO_ALGORITHMS_MENU;
                 break;
-            case ActionResult::RUN_BRUTE_FORCE_OPT:
+            case ActionResult::RUN_BRANCH_AND_BOUND:
+                runBranchAndBound();
+                status = ActionResult::BACK_TO_ALGORITHMS_MENU;
                 break;
             case ActionResult::DISPLAY_LATEST_RESULTS:
                 displayLatestResults();
@@ -120,17 +130,23 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
     bruteForce->clearData();
     if (ifOptimizedAlgorithm) {
         long long start = Timer::read_QPC();
-        bruteForce->mainFun(matrix, matrix->getSize());
+        bruteForce->mainFun(matrix, matrix->getSize(), true);
         long long end = Timer::read_QPC();
         bruteForce->displayLatestResults();
         latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
         latestRun = LatestAlgorithm::BRUTE_FORCE_OPT;
     } else {
-
+        long long start = Timer::read_QPC();
+        bruteForce->mainFun(matrix, matrix->getSize(), false);
+        long long end = Timer::read_QPC();
+        bruteForce->displayLatestResults();
+        latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
         latestRun = LatestAlgorithm::BRUTE_FORCE;
     }
 
     std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
 
     std::cout << "-----------------------------------" << std::endl;
     bruteForce->clearData();
@@ -143,10 +159,30 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
     system("PAUSE");
 }
 
+void AppController::runBranchAndBound() {
+    branchAndBound->mainFun(matrix, matrix->getSize());
+    system("PAUSE");
+}
+
 void AppController::displayLatestResults() {
+    switch (latestRun) {
+        case BRUTE_FORCE:
+            std::cout << algorithmTypes[0] << std::endl;
+            break;
+        case BRUTE_FORCE_OPT:
+            std::cout << algorithmTypes[1] << std::endl;
+            break;
+        case BRANCH_AND_BOUND:
+            std::cout << algorithmTypes[2] << std::endl;
+            break;
+        default:
+            break;
+    }
     if (latestRun == LatestAlgorithm::BRUTE_FORCE_OPT || latestRun == LatestAlgorithm::BRUTE_FORCE) {
         bruteForce->displayLatestResults();
         std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+        std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+        std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
     }
     system("PAUSE");
 }

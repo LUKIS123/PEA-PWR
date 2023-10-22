@@ -17,7 +17,8 @@ public:
         BACK_TO_ALGORITHMS_MENU = 1,
         RUN_BRUTE_FORCE = 2,
         RUN_BRUTE_FORCE_OPT = 3,
-        DISPLAY_LATEST_RESULTS = 4
+        RUN_BRANCH_AND_BOUND = 4,
+        DISPLAY_LATEST_RESULTS = 5
     };
     enum automaticTestsMenu {
         END_TEST = 0,

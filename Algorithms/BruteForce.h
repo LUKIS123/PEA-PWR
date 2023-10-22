@@ -29,11 +29,11 @@ public:
 
     void displayLatestResults();
 
-    void branch(bool *toBeVisitedVertices, int distance, int currentMinDist);
-
     int minDistanceToFinish(bool *visited);
 
-    void mainFun(Matrix *matrix, int matrixSize);
+    void mainFun(Matrix *matrix, int matrixSize, bool runOptimized);
+
+    void TSP_OPT(int currentVertex, int startVertex, int &helperSum);
 
     void TSP(int currentVertex, int startVertex, int &helperSum);
 

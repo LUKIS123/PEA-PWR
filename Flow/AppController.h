@@ -10,6 +10,7 @@
 #include "../Tests/AutomaticTests.h"
 #include "../Matrix/Matrix.h"
 #include "../Algorithms/BruteForce.h"
+#include "../Algorithms/BranchAndBound.h"
 
 class AppController {
 private:
@@ -18,7 +19,14 @@ private:
     AutomaticTests *automaticTests = nullptr;
     Matrix *matrix = nullptr;
     BruteForce *bruteForce = nullptr;
+    BranchAndBound *branchAndBound = nullptr;
 
+
+    std::string algorithmTypes[3] = {
+            "BRUTE FORCE",
+            "BRUTE FORCE OPTIMIZED",
+            "BRANCH AND BOUND"
+    };
     LatestAlgorithm latestRun = LatestAlgorithm::NONE;
     double latestTimerResult = 0.0;
 
@@ -42,6 +50,8 @@ public:
     void runBruteForce(bool ifOptimizedAlgorithm);
 
     void displayLatestResults();
+
+    void runBranchAndBound();
 };
 
 
