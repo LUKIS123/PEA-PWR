@@ -3,7 +3,9 @@
 
 #include "iostream"
 #include "algorithm"
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
+#include "vector"
+#include "./Utils/BranchAndBoundNode.h"
 #include "../Matrix/Matrix.h"
 
 class BranchAndBound {
@@ -13,6 +15,9 @@ private:
     int distance = 0;
 
     int **reducedMatrix = nullptr;
+
+    std::vector<BranchAndBoundNode *> *nodeList = nullptr;
+    BranchAndBoundNode *currentNode = nullptr;
 
 public:
     BranchAndBound();
@@ -32,6 +37,10 @@ public:
     int getMinimumDefined(int **matrix, int row, int column, int size);
 
     std::pair<int **, int **> splitBranches(int **matrix, int size, int row, int column);
+
+    void branchOut();
+
+    BranchAndBoundNode *getLowestBoundNode();
 };
 
 

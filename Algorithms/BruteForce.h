@@ -9,12 +9,10 @@ class BruteForce {
 private:
     int **matrix = nullptr;
     int matrixSize = 0;
-    int distance = 0;
+    int currentBestDistance = 0;
 
     List *stack;
     List *temporaryStack;
-
-    int d;
 
 public:
     bool *toBeVisited = nullptr;
@@ -36,10 +34,6 @@ public:
     void TSP_OPT(int currentVertex, int startVertex, int &helperSum);
 
     void TSP(int currentVertex, int startVertex, int &helperSum);
-
-    void test2(Matrix *matrix, int matrixSize);
-
-    void tsp2(int start, int v, int dh, List *verticesHeap, List *helperHeap);
 };
 
 

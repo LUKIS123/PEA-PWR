@@ -3,7 +3,7 @@
 #define INF INT_MAX
 
 BranchAndBound::BranchAndBound() {
-
+    nodeList = new std::vector<BranchAndBoundNode *>;
 }
 
 BranchAndBound::~BranchAndBound() {
@@ -37,7 +37,18 @@ void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
     int c = reduceColumns(reducedMatrix, matrixSize);
     int reduction = c + r;
 
-    std::cout << reduction << "\n";
+    // todo vector prawy node lewy i prawy
+    BranchAndBoundNode *first = new BranchAndBoundNode(reducedMatrix, matrixSize);
+    first->location = 0;
+    first->upperBound = reduction;
+    currentNode = first;
+    nodeList->push_back(first);
+
+
+    //TODO
+    branchOut();
+    return;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto values = chooseWorstCase(reducedMatrix, matrixSize);
 //    std::cout << "waga " << values.first << " wiersz " << values.second.first << " kolumna " << values.second.second
@@ -73,6 +84,44 @@ void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
         std::cout << "\n";
     }
 
+    std::cout << "\n";
+    std::cout << "\n";
+
+    int t1 = reduceRows(branches.second, matrixSize);
+    int t2 = reduceColumns(branches.second, matrixSize);
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+
+            std::cout << branches.second[i][j] << " ";
+        }
+        std::cout << "\n";
+    }
+    int lowerBound2 = reduction + t1 + t2;
+    std::cout << "\n" << "t=" << lowerBound2;
+
+
+    int t11 = reduceRows(branches.first, matrixSize - 1);
+    int t12 = reduceColumns(branches.first, matrixSize - 1);
+    int lowerBound1 = reduction + t11 + t12;
+    std::cout << "\n" << "t=" << lowerBound1 << std::endl;
+
+    // todo TERAZ WYBIERAMY BRANCHA O MNIEJSZYM LB CZYLI FIRST! o loweBound1
+    // powrot do korkow 2 i3
+
+    auto next = chooseWorstCase(branches.first, matrixSize - 1);
+    std::cout << "waga " << next.first << " wiersz " << next.second.first << " kolumna " << next.second.second
+              << "\n";
+
+    // todo dodac parametr pamietajacy numery wierzcholkow? dla macierzy.. moze jakas tablica i kazdy indeks ma nr wierzcholka
+//    Krok 6 – uzupełnianie trasy komiwojaŜera
+//    W macierzy 2x2 dobieramy tak pozostałe dwa łuki, aby utworzyć kompletną trasę
+//    komiwojaŜera (cykl Hamiltona).
+
+    // todo jesli macierz jest 2x2
+    // oblicz droge sposrod lukow, jesli LB jest wiekszy niz ktoras z odnog, to powrot
+
+    // todo dolozyc pamiec z jakimi wierzchłkami droga♦
+
 
 //    for (int i = 0; i < matrixSize; i++) {
 //        for (int j = 0; j < matrixSize; j++) {
@@ -82,6 +131,88 @@ void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
 //        std::cout << "\n";
 //    }
 }
+
+void BranchAndBound::branchOut() {
+    BranchAndBoundNode *lowest = getLowestBoundNode();
+//    while (currentNode->upperBound == lowest->upperBound && currentNode->data != reducedMatrix) {
+    while (currentNode->size != 2) {
+        auto values = chooseWorstCase(currentNode->data, currentNode->size);
+        int highestWeight = values.first;
+        int row = values.second.first;
+        int column = values.second.second;
+
+        // todo: zmienic -> nie bedziemy zmniejszac rozmiarow macierzy ++ widac caly czas indeksy oryginalne + zapisywac łuki w nodesie
+        // TODO WAZNE
+
+        auto branches = splitBranches(currentNode->data, currentNode->size, row, column);
+
+        int r11 = reduceRows(branches.first, currentNode->size - 1);
+        int r12 = reduceColumns(branches.first, currentNode->size - 1);
+
+        int r21 = reduceRows(branches.second, currentNode->size);
+        int r22 = reduceColumns(branches.second, currentNode->size);
+
+        int lowerBound1 = currentNode->upperBound + r11 + r12;
+        int lowerBound2 = currentNode->upperBound + r21 + r22;
+
+        BranchAndBoundNode *left = new BranchAndBoundNode(branches.first, currentNode->size - 1);
+        left->location = currentNode->location + 1;
+        left->upperBound = lowerBound1;
+        nodeList->push_back(left);
+
+        BranchAndBoundNode *right = new BranchAndBoundNode(branches.second, currentNode->size);
+        right->location = currentNode->location + 1;
+        right->upperBound = lowerBound2;
+        nodeList->push_back(right);
+
+
+        std::cout << "========PRAWY=======\n";
+        for (int i = 0; i < right->size; i++) {
+            for (int j = 0; j < right->size; j++) {
+
+                std::cout << right->data[i][j] << " ";
+            }
+            std::cout << "\n";
+        }
+        std::cout << "t=" << right->upperBound << "\n\n=========LEWY==========\n";
+        for (int i = 0; i < left->size; i++) {
+            for (int j = 0; j < left->size; j++) {
+
+                std::cout << left->data[i][j] << " ";
+            }
+            std::cout << "\n";
+        }
+        std::cout << "t=" << left->upperBound << "\n\n";
+
+
+        if (lowerBound1 < lowerBound2) {
+            currentNode = left;
+        } else {
+            currentNode = right;
+        }
+
+
+    }
+//    }
+
+}
+
+BranchAndBoundNode *BranchAndBound::getLowestBoundNode() {
+    BranchAndBoundNode *found = nodeList->at(0);
+    for (auto &i: *nodeList) {
+        if (found->upperBound > i->upperBound) {
+            found = i;
+        }
+    }
+
+    return found;
+//    for (auto i = nodeList->begin(); i != nodeList->end(); ++i) {
+//        if (found->upperBound > (*i)->upperBound) {
+//            found = *i;
+//        }
+//    }
+}
+
 
 int BranchAndBound::reduceRows(int **matrix, int size) {
     int minValues[size];
@@ -188,8 +319,7 @@ std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, 
             if (j == column) {
                 continue;
             }
-            if (i == row && j == column) {
-                //todo naprawic nigdy sie nie wykonuje
+            if (i == column && j == row) {
                 branch1Matrix[rowPointer][columnPointer] = INF;
             } else {
                 branch1Matrix[rowPointer][columnPointer] = matrix[i][j];
@@ -198,7 +328,6 @@ std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, 
         }
         rowPointer++;
     }
-
     branch2Matrix[row][column] = INF;
 
     return {branch1Matrix, branch2Matrix};

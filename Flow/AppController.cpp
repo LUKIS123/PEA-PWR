@@ -147,15 +147,6 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
     std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
-
-    std::cout << "-----------------------------------" << std::endl;
-    bruteForce->clearData();
-    long long start = Timer::read_QPC();
-    bruteForce->test2(matrix, matrix->getSize());
-    long long end = Timer::read_QPC();
-    double testResult = Timer::getMicroSecondsElapsed(start, end);
-    std::cout << "Timer: " << testResult << " us" << std::endl;
-
     system("PAUSE");
 }
 

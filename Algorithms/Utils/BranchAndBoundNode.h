@@ -2,14 +2,15 @@
 #define PEA_PWR_BRANCHANDBOUNDNODE_H
 
 #include "iostream"
-#include <bits/stdc++.h>
+#include "vector"
+//#include "bits/stdc++.h"
 
 using namespace std;
 
 class BranchAndBoundNode {
 public:
     int **data;
-    int rem;
+    //int rem;
     int weight;
     int size;
     vector<bool> visited;
@@ -18,8 +19,11 @@ public:
 
     // todo test
     int upperBound = 0;
+    int *vertices = nullptr;
+    vector<int> with;
+    vector<int> without;
 
-    BranchAndBoundNode(int **data, int rem, int size, const vector<bool> &visited);
+    BranchAndBoundNode(int **data, int size);
 
     virtual ~BranchAndBoundNode();
 };

@@ -3,3 +3,4 @@
 .idea
 .idea
 cmake-build-release
+cmake-build-debug-mingw
