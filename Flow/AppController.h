@@ -12,6 +12,8 @@
 #include "../Algorithms/BruteForce.h"
 #include "../Algorithms/BranchAndBound.h"
 
+#include "../Algorithms/BranchAndBoundNew.h"
+
 class AppController {
 private:
     RandomDataGenerator *randomDataGenerator = nullptr;

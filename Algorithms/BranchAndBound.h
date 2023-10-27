@@ -3,6 +3,7 @@
 
 #include "iostream"
 #include "algorithm"
+#include <stack>
 //#include <bits/stdc++.h>
 #include "vector"
 #include "./Utils/BranchAndBoundNode.h"
@@ -12,12 +13,19 @@ class BranchAndBound {
 private:
     int **inputMatrix = nullptr;
     int matrixSize = 0;
-    int distance = 0;
 
-    int **reducedMatrix = nullptr;
+    int **rootMatrix = nullptr;
+
+
+    BranchAndBoundNode *bestNodeFound = nullptr;
+
+    std::vector<std::pair<int, int>> withBest;
+    int distanceBest = 0;
 
     std::vector<BranchAndBoundNode *> *nodeList = nullptr;
     BranchAndBoundNode *currentNode = nullptr;
+
+    std::vector<int> *currentPathVertices = nullptr;
 
 public:
     BranchAndBound();
@@ -28,19 +36,32 @@ public:
 
     void mainFun(Matrix *matrix, int matrixSize);
 
-    int reduceRows(int **matrix, int size);
+    static int reduceRows(int **matrix, int size);
 
-    int reduceColumns(int **matrix, int size);
+    static int reduceColumns(int **matrix, int size);
 
-    std::pair<int, std::pair<int, int>> chooseWorstCase(int **matrix, int size);
+    static std::pair<int, std::pair<int, int>> chooseWorstCase(int **matrix, int size);
 
-    int getMinimumDefined(int **matrix, int row, int column, int size);
-
-    std::pair<int **, int **> splitBranches(int **matrix, int size, int row, int column);
+    static int getMinimumDefined(int **matrix, int row, int column, int size);
 
     void branchOut();
 
     BranchAndBoundNode *getLowestBoundNode();
+
+    static pair<int **, int **> splitBranches(int **matrix, int size, int row, int column);
+
+    static int updateMatrixLeft(int **matrix, int size, const std::vector<pair<int, int>> &with);
+
+    static int updateMatrixRight(int **matrix, int size, int row, int column);
+
+    std::vector<std::pair<std::pair<int, int>, int>> addRemainingEdges(int **matrix);
+
+    pair<vector<std::pair<int, int>>, vector<std::pair<int, int>>> checkConnections(
+            const std::vector<std::pair<int, int>> &with);
+
+    vector<pair<int, int>> getRemainingEdges(int **matrix, int size);
+
+    void solve(BranchAndBoundNode *root);
 };
 
 

@@ -152,6 +152,10 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
 
 void AppController::runBranchAndBound() {
     branchAndBound->mainFun(matrix, matrix->getSize());
+    std::cout << "\n============\n";
+    system("PAUSE");
+    BranchAndBoundNew *bb = new BranchAndBoundNew();
+    bb->mainFun(matrix, matrix->getSize());
     system("PAUSE");
 }
 

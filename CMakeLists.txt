@@ -1,4 +1,4 @@
-#cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.26)
 project(PEA_PWR)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -30,4 +30,8 @@ add_executable(PEA_PWR main.cpp
         Algorithms/BranchAndBound.cpp
         Algorithms/Utils/BranchAndBoundNode.h
         Algorithms/Utils/BranchAndBoundNode.cpp
+        Algorithms/BranchAndBoundNew.cpp
+        Algorithms/BranchAndBoundNew.h
+        Algorithms/Utils/Node.cpp
+        Algorithms/Utils/Node.h
 )
