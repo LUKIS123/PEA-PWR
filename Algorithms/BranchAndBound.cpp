@@ -2,8 +2,9 @@
 
 #define INF INT_MAX
 
+
 BranchAndBound::BranchAndBound() {
-    nodeList = new std::vector<BranchAndBoundNode *>;
+
 }
 
 BranchAndBound::~BranchAndBound() {
@@ -11,12 +12,17 @@ BranchAndBound::~BranchAndBound() {
 }
 
 void BranchAndBound::displayLatestResults() {
-
+    std::cout << "\n";
+    for (auto &i: withBest) {
+        std::cout << i.first + 1 << " -> "
+                  << i.second + 1 << std::endl;
+    }
 }
 
 void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
     this->matrixSize = matrixSize;
     this->inputMatrix = matrix->getMatrix();
+    this->distanceBest = INF;
 
     rootMatrix = new int *[matrixSize];
     for (int i = 0; i < matrixSize; i++) {
@@ -37,151 +43,207 @@ void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
     int c = reduceColumns(rootMatrix, matrixSize);
     int reduction = c + r;
 
-    BranchAndBoundNode *start = new BranchAndBoundNode(rootMatrix, matrixSize);
+    auto *start = new BranchAndBoundNode(rootMatrix, matrixSize);
 
-    std::vector<std::pair<int, int>> edges;
-    start->path = edges;
+    std::vector<std::pair<int, int>> w;
+    std::vector<std::pair<int, int>> wo;
+    start->with = w;
+    start->without = wo;
 
     start->location = 0;
     start->upperBound = reduction;
-    start->remainingVertices = matrixSize;
-    start->branchedOut = true;
-
 
     solve(start);
-    return;
-
-
-    currentNode = start;
-    nodeList->push_back(start);
-
-    branchOut();
+    std::cout << "\nCost is " << distanceBest << std::endl;
 }
 
 void BranchAndBound::solve(BranchAndBoundNode *root) {
     std::stack<BranchAndBoundNode *> lifoQueue;
     lifoQueue.push(root);
+
     while (!lifoQueue.empty()) {
         BranchAndBoundNode *node = lifoQueue.top();
         lifoQueue.pop();
-        
 
-    }
-
-
-}
-
-void BranchAndBound::branchOut() {
-    while (getLowestBoundNode()->upperBound < currentNode->upperBound && currentNode->branchedOut &&
-           currentNode->data != rootMatrix) {
-
-        while (currentNode->remainingVertices != 2) {
-            auto values = chooseWorstCase(currentNode->data, currentNode->size);
-            int highestWeight = values.first;
-            int row = values.second.first;
-            int column = values.second.second;
-
-            // dodawanie do sciezki nastepnego splita
-            currentNode->path.emplace_back(values.second.first, values.second.second);
-            std::vector<pair<int, int>> tmp(currentNode->with);
-            tmp.emplace_back(row, column);
-
-            auto br = splitBranches(currentNode->data, currentNode->size, row, column);
-
-            int cl = updateMatrixLeft(br.first, matrixSize, tmp);
-            int cr = updateMatrixRight(br.second, matrixSize, row, column);
-
-            BranchAndBoundNode *left = new BranchAndBoundNode(br.first, currentNode->size);
-            left->location = currentNode->location + 1;
-            left->upperBound = currentNode->upperBound + cl;
-            left->parent = currentNode;
-            left->path.insert(std::end(left->path), std::begin(currentNode->path), std::end(currentNode->path));
-            left->with.insert(std::end(left->with), std::begin(currentNode->with), std::end(currentNode->with));
-            left->with.emplace_back(row, column);
-            left->remainingVertices = currentNode->remainingVertices - 1;
-            nodeList->push_back(left);
-
-            BranchAndBoundNode *right = new BranchAndBoundNode(br.second, currentNode->size);
-            right->location = currentNode->location + 1;
-            right->upperBound = currentNode->upperBound + cr;
-            right->parent = currentNode;
-            right->path.insert(std::end(right->path), std::begin(currentNode->path), std::end(currentNode->path));
-            right->without.insert(std::end(right->with), std::begin(currentNode->without),
-                                  std::end(currentNode->without));
-            right->without.emplace_back(row, column);
-            right->remainingVertices = currentNode->remainingVertices - 1;
-            nodeList->push_back(right);
-
-            std::cout << "========LEWY=======\n";
-            for (int i = 0; i < left->size; i++) {
-                for (int j = 0; j < left->size; j++) {
-
-                    std::cout << left->data[i][j] << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "t=" << left->upperBound << "\n\n";
-            std::cout << "========PRAWY=======\n";
-            for (int i = 0; i < right->size; i++) {
-                for (int j = 0; j < right->size; j++) {
-
-                    std::cout << right->data[i][j] << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "t=" << right->upperBound << "\n\n";
-
-
-            if (cl < cr) {
-                left->branchedOut = true;
-                currentNode = left;
-            } else {
-                right->branchedOut = true;
-                currentNode = right;
-            }
+        if (node->upperBound > distanceBest) {
+            delete node;
+            continue;
         }
 
+        // Przeszukiwanie w glab dopoki nie pozostanie macierz 2x2
+        //if (node->location == matrixSize - 2) {
+        if (node->with.size() == matrixSize - 2) {
+            auto rem = addRemainingEdgesOfOpportunityMatrix(node->data, node->size, node->with);
+            for (const auto &item: rem) {
+                node->upperBound += item.second;
+                node->with.push_back(item.first);
+            }
+            if (node->upperBound < distanceBest) {
+                distanceBest = node->upperBound;
+                withBest = std::vector<std::pair<int, int >>(node->with);
+                bestNodeFound = new BranchAndBoundNode(*node);
+            }
 
-        auto rem = addRemainingEdges(currentNode->data);
-        for (const auto &item: rem) {
-            currentNode->remainingVertices -= 1;
-            currentNode->upperBound += item.second;
-            currentNode->with.push_back(item.first);
-            currentNode->path.push_back(item.first);
+            BranchAndBoundNode::sort_stack_cmp(lifoQueue);
+            delete node;
+            continue;
         }
-        distanceBest = currentNode->upperBound;
-        withBest = std::vector<std::pair<int, int>>(currentNode->with);
 
+        auto values = chooseWorstCase(node->data, node->size);
+        int row = values.second.first;
+        int column = values.second.second;
 
-        currentNode = getLowestBoundNode();
+        std::vector<pair<int, int>> tmp = node->with;
+        tmp.emplace_back(row, column);
+
+        auto br = splitBranches(node->data, node->size, row, column);
+        int cl = updateMatrixLeft(br.first, node->size, tmp);
+        int cr = updateMatrixRight(br.second, node->size, row, column);
+
+        auto *left = new BranchAndBoundNode(br.first, node->size);
+        left->location = node->location + 1;
+        left->upperBound = node->upperBound + cl;
+        left->with.insert(std::end(left->with), std::begin(node->with), std::end(node->with));
+        left->with.emplace_back(row, column);
+        left->without.insert(std::end(left->without), std::begin(node->without), std::end(node->without));
+
+        auto *right = new BranchAndBoundNode(br.second, node->size);
+        right->location = node->location + 1;
+        right->upperBound = node->upperBound + cr;
+        right->without.insert(std::end(right->without), std::begin(node->without), std::end(node->without));
+        right->without.emplace_back(row, column);
+        right->with.insert(std::end(right->with), std::begin(node->with), std::end(node->with));
+
+        if (cl < cr) {
+            lifoQueue.push(right);
+            lifoQueue.push(left);
+        } else {
+            lifoQueue.push(left);
+            lifoQueue.push(right);
+        }
+
+        delete node;
     }
-
-    std::cout << "sciezka:";
-    for (const auto &item: withBest) {
-        std::cout << "(" << item.first << "," << item.second << "),";
-    }
-
-    std::cout << "\nt=" << distanceBest << "\n\n";
 
 }
 
 std::vector<std::pair<std::pair<int, int>, int>>
-BranchAndBound::addRemainingEdges(int **matrix) {
-    std::vector<std::pair<std::pair<int, int>, int>> result;
-    auto remaining = getRemainingEdges(currentNode->data, currentNode->size);
-    for (const auto &item: remaining) {
-        int firstV = item.first;
-        auto i = std::find_if(remaining.begin(), remaining.end(),
-                              [&firstV](const std::pair<int, int> &element) { return element.second == firstV; });
-        if (i != remaining.end()) {
-            result.push_back({{item.first, item.second}, matrix[item.first][item.second]});
-            result.push_back({{i->first, i->second}, matrix[i->first][i->second]});
+BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with) {
+    std::vector<std::pair<std::pair<int, int>, int >> result;
+    auto remaining = getAllRemainingEdges(matrix, size);
+
+    // TODO nie dziala dobieranie  - wczesniej out byl 1 kratka z macierzy 2x2 ale nie sprawdza sie dla generowanych
+    // byc moze metoda to path , pozniej jeden luk z brakujacych samych
+    // a pozniej jeszcze +1 zawiracacy taki ktory nie byl wybrany
+
+    std::vector<int> firstVerticesRemaining;
+    std::vector<int> secondVerticesRemaining;
+    for (int i = 0; i < size; i++) {
+        auto itFirst = std::find_if(with.begin(), with.end(),
+                                    [&i](const pair<int, int> &p) { return p.first == i; });
+        auto itSecond = std::find_if(with.begin(), with.end(),
+                                     [&i](const pair<int, int> &p) { return p.second == i; });
+        if (itFirst == with.end()) {
+            firstVerticesRemaining.push_back(i);
+        }
+        if (itSecond == with.end()) {
+            secondVerticesRemaining.push_back(i);
         }
     }
+    std::vector<int> firstVerticesFound;
+    std::vector<int> secondVerticesFound;
+    std::pair<std::pair<int, int>, std::pair<int, int>> match;
+    for (const auto &item1: remaining) {
+        for (const auto &item2: remaining) {
+            if (item1 == item2) continue;
+            firstVerticesFound.push_back(item1.first);
+            firstVerticesFound.push_back(item2.first);
+            secondVerticesFound.push_back(item1.second);
+            secondVerticesFound.push_back(item2.second);
+
+            std::sort(firstVerticesFound.begin(), firstVerticesFound.end());
+            std::sort(firstVerticesRemaining.begin(), firstVerticesRemaining.end());
+            std::sort(secondVerticesFound.begin(), secondVerticesFound.end());
+            std::sort(secondVerticesRemaining.begin(), secondVerticesRemaining.end());
+            if (firstVerticesFound == firstVerticesRemaining && secondVerticesFound == secondVerticesRemaining) {
+                match = std::make_pair(item1, item2);
+                break;
+            } else {
+                firstVerticesFound.clear();
+                secondVerticesFound.clear();
+            }
+        }
+    }
+
+    std::cout << "\n=============\n";
+    for (auto &i: remaining) {
+        std::cout << i.first + 1 << " -> "
+                  << i.second + 1 << std::endl;
+    }
+    std::cout << "\n======DODANE=======\n";
+    std::cout << match.first.first << " " << match.first.second << "||" << match.second.first << " "
+              << match.second.second;
+    std::cout << "\n=============\n";
+
+    result.push_back({{match.first.first, match.first.second}, matrix[match.first.first][match.first.second]});
+    result.push_back({{match.second.first, match.second.second}, matrix[match.second.first][match.second.second]});
     return result;
+
+//    std::cout << "\n=============\n";
+//    for (auto &i: remaining) {
+//        std::cout << i.first + 1 << " -> "
+//                  << i.second + 1 << std::endl;
+//    }
+//    std::cout << "\n======DODANE=======\n";
+//    std::cout << match.first.first << " " << match.first.second << "||" << match.second.first << " "
+//              << match.second.second;
+//    std::cout << "\n=============\n";
+/////////////////////////////////////
+
+//    std::cout << "\n=============\n";
+//    for (auto &i: remaining) {
+//        std::cout << i.first + 1 << " -> "
+//                  << i.second + 1 << std::endl;
+//    }
+//    std::cout << "\n=============\n";
+//
+//    std::vector<int> vertexOccurrences;
+//    for (const auto &item: with) {
+//        vertexOccurrences.push_back(item.first);
+//        vertexOccurrences.push_back(item.second);
+//    }
+//
+//    std::vector<int> incomplete;
+//    for (const auto &item: vertexOccurrences) {
+//        if (std::count(vertexOccurrences.begin(), vertexOccurrences.end(), item) != 2) {
+//            if (std::find(incomplete.begin(), incomplete.end(), item) == incomplete.end()) {
+//                incomplete.push_back(item);
+//            }
+//        }
+//    }
+//    std::cout << "\n=============\n";
+//    for (const auto &item: incomplete) {
+//        std::cout << item + 1 << std::endl;
+//
+//    }
+//    std::cout << "\n=============\n";
+//
+//    for (const auto &item: remaining) {
+////        if ((item.first == incomplete.first && item.second == incomplete.second) ||
+////            (item.first == incomplete.second && item.second == incomplete.first)) {
+////            continue;
+////        }
+//        if ((std::find(incomplete.begin(), incomplete.end(), item.first) != incomplete.end()) &&
+//            (std::find(incomplete.begin(), incomplete.end(), item.second) != incomplete.end())) {
+//            continue;
+//        }
+//
+//        result.push_back({{item.first, item.second}, matrix[item.first][item.second]});
+//    }
+//    return result;
 }
 
-std::vector<std::pair<int, int>> BranchAndBound::getRemainingEdges(int **matrix, int size) {
+std::vector<std::pair<int, int>> BranchAndBound::getAllRemainingEdges(int **matrix, int size) {
     std::vector<std::pair<int, int>> rem;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -192,46 +254,6 @@ std::vector<std::pair<int, int>> BranchAndBound::getRemainingEdges(int **matrix,
         }
     }
     return rem;
-}
-
-//std::pair<std::vector<std::pair<int, int>>, std::vector<std::pair<int, int>>>
-//BranchAndBound::checkConnections(const std::vector<std::pair<int, int>> &with) {
-//    currentPathVertices = new std::vector<int>;
-//    vector<std::pair<int, int>> complete;
-//    vector<std::pair<int, int>> incomplete;
-//    auto iterator = with.begin();
-//
-//    while ((complete.size() + incomplete.size()) != with.size()) {
-//        pair<int, int> firstPair = *iterator;
-//        int firstV = firstPair.first;
-//
-//        auto i = std::find_if(with.begin(), with.end(),
-//                              [&firstV](const std::pair<int, int> &element) { return element.second == firstV; });
-//        if (i != with.end()) {
-//            complete.push_back(*iterator);
-//        } else {
-//            if (i->second != firstV) {
-//                incomplete.push_back(*iterator);
-//            }
-//        }
-//        currentPathVertices->push_back(iterator->first);
-//        ++iterator;
-//    }
-//
-//    return {complete, incomplete};
-//}
-
-
-BranchAndBoundNode *BranchAndBound::getLowestBoundNode() {
-    int index = 0;
-    int bound = nodeList->at(0)->upperBound;
-    for (int i = 0; i < nodeList->size(); i++) {
-        BranchAndBoundNode *node = nodeList->at(i);
-        if (node->upperBound < bound && !node->branchedOut) {
-            index = i;
-        }
-    }
-    return nodeList->at(index);
 }
 
 std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, int row, int column) {
@@ -264,12 +286,10 @@ std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, 
             }
         }
     }
-    //branch2Matrix[row][column] = INF;
     return {branch1Matrix, branch2Matrix};
 }
 
-// TODO:
-// najpier idzie chooseWorstCase -> potem split i po splicie trzeba wywolywac ta funckje
+// najpierw idzie chooseWorstCase -> potem split i po splicie trzeba wywolywac ta funckje
 int BranchAndBound::updateMatrixLeft(int **matrix, int size, const std::vector<pair<int, int>> &with) {
     // przeiterowac po path, sprawdzic czy jakies sie nie powtarzaja krancami -> wtedy INF
     for (auto &i: with) {
@@ -280,7 +300,6 @@ int BranchAndBound::updateMatrixLeft(int **matrix, int size, const std::vector<p
             }
         }
     }
-
     int rr = reduceRows(matrix, size);
     int rc = reduceColumns(matrix, size);
     int reduction = rr + rc;
@@ -353,9 +372,10 @@ int BranchAndBound::reduceColumns(int **matrix, int size) {
     return sum;
 }
 
-std::pair<int, std::pair<int, int>> BranchAndBound::chooseWorstCase(int **matrix, int size) {
-    int x, y;
-    int value = 0;
+std::pair<int, std::pair<int, int>>
+BranchAndBound::chooseWorstCase(int **matrix, int size) {
+    int x = 0, y = 0;
+    int value = -1;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             if (i == j) continue;
@@ -369,7 +389,7 @@ std::pair<int, std::pair<int, int>> BranchAndBound::chooseWorstCase(int **matrix
             }
         }
     }
-    return {value, {x, y}};
+    return std::make_pair(value, std::make_pair(x, y));
 }
 
 int BranchAndBound::getMinimumDefined(int **matrix, int row, int column, int size) {

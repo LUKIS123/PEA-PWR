@@ -151,11 +151,29 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
 }
 
 void AppController::runBranchAndBound() {
-    branchAndBound->mainFun(matrix, matrix->getSize());
+    BranchAndBoundNew *bb = new BranchAndBoundNew();
+    long long start2 = Timer::read_QPC();
+    bb->mainFun(matrix, matrix->getSize());
+    long long end2 = Timer::read_QPC();
+    latestTimerResult = Timer::getMicroSecondsElapsed(start2, end2);
+    bb->printPath();
+    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
     std::cout << "\n============\n";
     system("PAUSE");
-    BranchAndBoundNew *bb = new BranchAndBoundNew();
-    bb->mainFun(matrix, matrix->getSize());
+
+    long long start = Timer::read_QPC();
+    branchAndBound->mainFun(matrix, matrix->getSize());
+    long long end = Timer::read_QPC();
+    latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
+    latestRun = LatestAlgorithm::BRANCH_AND_BOUND;
+
+    branchAndBound->displayLatestResults();
+    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
+
     system("PAUSE");
 }
 

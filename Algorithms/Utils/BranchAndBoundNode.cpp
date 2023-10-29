@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "BranchAndBoundNode.h"
 
 using namespace std;
@@ -14,23 +15,39 @@ BranchAndBoundNode::BranchAndBoundNode(int **data, int size)
 
 }
 
-BranchAndBoundNode::BranchAndBoundNode(const BranchAndBoundNode &node) {
-    data = node.data;
-    size = node.size;
-    location = node.location;
-    parent = node.parent;
-    branchedOut = node.branchedOut;
-    remainingVertices = node.remainingVertices;
-    upperBound = node.upperBound;
-    path = node.path;
-    with = node.with;
-    without = node.without;
+void BranchAndBoundNode::sortStackRecursive(stack<BranchAndBoundNode *> &s) {
+    if (s.empty())
+        return;
+
+    BranchAndBoundNode *x = s.top();
+    s.pop();
+
+    sortStackRecursive(s);
+
+    stack<BranchAndBoundNode *> tempStack;
+
+    while (!s.empty() && s.top() > x) {
+        tempStack.push(s.top());
+        s.pop();
+    }
+
+    s.push(x);
+
+    while (!tempStack.empty()) {
+        s.push(tempStack.top());
+        tempStack.pop();
+    }
 }
 
-BranchAndBoundNode::BranchAndBoundNode(int **data, int size, int location, BranchAndBoundNode *parent, bool branchedOut,
-                                       int remainingVertices, int upperBound, const vector<pair<int, int>> &path,
-                                       const vector<pair<int, int>> &with, const vector<pair<int, int>> &without)
-        : data(data), size(size), location(location), parent(parent), branchedOut(branchedOut),
-          remainingVertices(remainingVertices), upperBound(upperBound), path(path), with(with), without(without) {
+void BranchAndBoundNode::sort_stack_cmp(std::stack<BranchAndBoundNode *> &stack) {
+    std::vector<BranchAndBoundNode *> tmp_container;
+    tmp_container.reserve(stack.size());
+    while (!stack.empty()) {
+        tmp_container.push_back(std::move(stack.top()));
+        stack.pop();
+    }
+    std::sort(tmp_container.begin(), tmp_container.end(), BranchAndBoundNode::comp());
+    for (auto it: tmp_container) {
+        stack.push(std::move(it));
+    }
 }
-

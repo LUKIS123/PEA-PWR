@@ -1,9 +1,9 @@
 #ifndef PEA_PWR_BRANCHANDBOUNDNODE_H
 #define PEA_PWR_BRANCHANDBOUNDNODE_H
 
-#include "iostream"
-#include "vector"
-//#include "bits/stdc++.h"
+#include <iostream>
+#include <vector>
+#include <stack>
 
 using namespace std;
 
@@ -12,13 +12,8 @@ public:
     int **data;
     int size;
     int location;
-    BranchAndBoundNode *parent = nullptr;
 
-    // todo test
-    bool branchedOut;
-    int remainingVertices;
     int upperBound = 0;
-    vector<pair<int, int>> path;
     vector<pair<int, int>> with;
     vector<pair<int, int>> without;
 
@@ -27,16 +22,24 @@ public:
     virtual ~BranchAndBoundNode();
 
     bool operator<(const BranchAndBoundNode &other) const {
-        if (branchedOut) return false;
         return upperBound < other.upperBound;
     }
 
+    bool operator>(const BranchAndBoundNode &other) const {
+        return upperBound > other.upperBound;
+    }
 
-    BranchAndBoundNode(const BranchAndBoundNode &node);
+    void sortStackRecursive(stack<BranchAndBoundNode *> &s);
 
-    BranchAndBoundNode(int **data, int size, int location, BranchAndBoundNode *parent, bool branchedOut,
-                       int remainingVertices, int upperBound, const vector<pair<int, int>> &path,
-                       const vector<pair<int, int>> &with, const vector<pair<int, int>> &without);
+    static void sort_stack_cmp(std::stack<BranchAndBoundNode *> &stack);
+
+    class comp {
+    public:
+        bool operator()(const BranchAndBoundNode *lhs, const BranchAndBoundNode *rhs) const {
+            return lhs->upperBound > rhs->upperBound;
+        }
+    };
+
 };
 
 

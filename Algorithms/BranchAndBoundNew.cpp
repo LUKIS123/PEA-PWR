@@ -35,7 +35,7 @@ int BranchAndBoundNew::solve(int **adjacencyMatrix) {
         int i = min->vertex;
         if (min->level == matrixSize - 1) {
             min->path.emplace_back(i, 0);
-            printPath(min->path);
+            withBest = min->path;
             return min->cost;
         }
 
@@ -107,10 +107,10 @@ int BranchAndBoundNew::cost_calculation(int **matrix_reduced, int size) {
     return cost;
 }
 
-void BranchAndBoundNew::printPath(std::vector<std::pair<int, int>> const &list) {
+void BranchAndBoundNew::printPath() {
     std::cout << "\n";
-    for (int i = 0; i < list.size(); i++) {
-        std::cout << list[i].first + 1 << " -> "
-                  << list[i].second + 1 << std::endl;
+    for (int i = 0; i < withBest.size(); i++) {
+        std::cout << withBest[i].first + 1 << " -> "
+                  << withBest[i].second + 1 << std::endl;
     }
 }

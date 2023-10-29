@@ -4,7 +4,6 @@
 
 #include "iostream"
 #include "algorithm"
-//#include <bits/stdc++.h>
 #include "vector"
 #include <queue>
 #include "./Utils/Node.h"
@@ -18,8 +17,9 @@ public:
     int matrixSize = 0;
     int **reducedMatrix = nullptr;
 
+    std::vector<std::pair<int, int>> withBest;
 
-    void printPath(const std::vector<std::pair<int, int>> &list);
+    void printPath();
 
     int cost_calculation(int **matrix_reduced, int size);
 
