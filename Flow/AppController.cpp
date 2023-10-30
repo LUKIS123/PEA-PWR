@@ -23,6 +23,9 @@ void AppController::clearMemory() {
     delete randomDataGenerator;
     delete generator;
     delete matrix;
+    delete bruteForce;
+    delete branchAndBound;
+    delete automaticTests;
 }
 
 void AppController::mainIndex() {
@@ -160,7 +163,7 @@ void AppController::runBranchAndBound() {
     std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
-    std::cout << "\n============\n";
+    std::cout << "\n====================================\n";
     system("PAUSE");
 
     long long start = Timer::read_QPC();

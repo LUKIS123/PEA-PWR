@@ -1,7 +1,7 @@
 #ifndef PEA_PWR_APPCONTROLLER_H
 #define PEA_PWR_APPCONTROLLER_H
 
-#include "iostream"
+#include <iostream>
 #include "ConsoleView.h"
 #include "ActionResult.h"
 #include "LatestAlgorithmRun.h"
@@ -24,10 +24,11 @@ private:
     BranchAndBound *branchAndBound = nullptr;
 
 
-    std::string algorithmTypes[3] = {
+    std::string algorithmTypes[4] = {
             "BRUTE FORCE",
             "BRUTE FORCE OPTIMIZED",
-            "BRANCH AND BOUND"
+            "BRANCH AND BOUND",
+            "DYNAMIC"
     };
     LatestAlgorithm latestRun = LatestAlgorithm::NONE;
     double latestTimerResult = 0.0;

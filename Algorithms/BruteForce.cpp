@@ -51,37 +51,40 @@ void BruteForce::mainFun(Matrix *matrix, int matrixSize, bool runOptimized) {
 
 // Metoda wyszukiwania cyklu Hamiltona o najmniejszej wadze (Brute Force)
 void BruteForce::TSP(int currentVertex, int startVertex, int &helperSum) {
+    // Dodanie biezacego wierzcholka na stos (zapamietywanie sciezki)
     temporaryStack->pushEnd(currentVertex);
-    //k2
+
+    // Jesli stos zawiera cykl Hamiltona i istnieje polaczenie z wierzcholkiem startowym
     if (temporaryStack->getSize() == matrixSize && matrix[startVertex][currentVertex] != -1) {
-        //k4
+        // Dodanie wagi drogi do wierzcholka startowego i skopiowanie sciezki
         helperSum += matrix[currentVertex][startVertex];
         if (helperSum < currentBestDistance) {
             currentBestDistance = helperSum;
             stack->copyOf(temporaryStack);
             stack->pushEnd(startVertex);
         }
-        //k8
+        // Usuwanie wagi i usuwanie ze sciezki powrotnej
         helperSum -= matrix[currentVertex][startVertex];
         temporaryStack->popEnd();
         return;
     }
-    //k10
+    // Dodanie wierzcholka do odwiedzonych
     alreadyVisited[currentVertex] = true;
+    // Badanie sasiadow
     for (int i = 0; i < matrixSize; i++) {
-        //k12
+        // Jesli wierzcholek odwiedzony lub droga z biezacego wierzcholka nie istnieje -> continue
         if (alreadyVisited[i] || matrix[currentVertex][i] == -1) {
             continue;
         }
+        // Dodanie wagi do sumy tymczasowej
         helperSum += matrix[currentVertex][i];
-
+        // Wywolywanie rekurencyjne dla kolejnego badanego sasiada
         TSP(i, startVertex, helperSum);
-
+        // Usuwanie wagi z sumy pomocniczej
         helperSum -= matrix[currentVertex][i];
     }
-    //k16
+    // Zwalnianie biezacego wierzcholka i usuwanie ze stosu
     alreadyVisited[currentVertex] = false;
-    // k17
     temporaryStack->popEnd();
 }
 

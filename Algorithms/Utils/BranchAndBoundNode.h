@@ -19,6 +19,8 @@ public:
 
     BranchAndBoundNode(int **data, int size);
 
+    BranchAndBoundNode(BranchAndBoundNode &node);
+
     virtual ~BranchAndBoundNode();
 
     bool operator<(const BranchAndBoundNode &other) const {
@@ -28,18 +30,6 @@ public:
     bool operator>(const BranchAndBoundNode &other) const {
         return upperBound > other.upperBound;
     }
-
-    void sortStackRecursive(stack<BranchAndBoundNode *> &s);
-
-    static void sort_stack_cmp(std::stack<BranchAndBoundNode *> &stack);
-
-    class comp {
-    public:
-        bool operator()(const BranchAndBoundNode *lhs, const BranchAndBoundNode *rhs) const {
-            return lhs->upperBound > rhs->upperBound;
-        }
-    };
-
 };
 
 

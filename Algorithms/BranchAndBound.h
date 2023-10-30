@@ -12,22 +12,22 @@ class BranchAndBound {
 private:
     int **inputMatrix = nullptr;
     int matrixSize = 0;
-
     int **rootMatrix = nullptr;
-
-    BranchAndBoundNode *bestNodeFound = nullptr;
-
-    std::vector<std::pair<int, int>> withBest;
-    int distanceBest = 0;
-
 public:
-    BranchAndBound();
+    std::vector<std::pair<int, int>> withBest;
+    int distanceBest = INT_MAX;
+    std::vector<int> pathBest;
+    std::vector<int> pathCurrentNode;
 
-    virtual ~BranchAndBound();
+    BranchAndBound() = default;
+
+    virtual ~BranchAndBound() = default;
 
     void displayLatestResults();
 
     void mainFun(Matrix *matrix, int matrixSize);
+
+    void solveTSP(BranchAndBoundNode *root);
 
     static int reduceRows(int **matrix, int size);
 
@@ -41,15 +41,15 @@ public:
 
     static int updateMatrixRight(int **matrix, int size, int row, int column);
 
-    static std::vector<std::pair<std::pair<int, int>, int>>
-    addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with);
+    std::vector<std::pair<std::pair<int, int>, int>>
+    addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with,
+                                         bool &outSuccess);
 
     static vector<pair<int, int>> getAllRemainingEdges(int **matrix, int size);
 
-    void solve(BranchAndBoundNode *root);
+    static std::pair<int, std::pair<int, int>> chooseBestCaseEdge(int **matrix, int size);
 
-    static std::pair<int, std::pair<int, int>>
-    chooseWorstCase(int **matrix, int size);
+    bool tryMakePath(const vector<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
 };
 
 

@@ -3,20 +3,18 @@
 #define INF INT_MAX
 
 
-BranchAndBound::BranchAndBound() {
-
-}
-
-BranchAndBound::~BranchAndBound() {
-
-}
-
 void BranchAndBound::displayLatestResults() {
-    std::cout << "\n";
+    std::cout << std::endl;
     for (auto &i: withBest) {
         std::cout << i.first + 1 << " -> "
                   << i.second + 1 << std::endl;
     }
+    std::cout << "Path: ";
+    for (const auto &item: pathBest) {
+        std::cout << item << ", ";
+    }
+    std::cout << std::endl;
+    std::cout << "Distance: " << distanceBest << std::endl;
 }
 
 void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
@@ -49,15 +47,13 @@ void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
     std::vector<std::pair<int, int>> wo;
     start->with = w;
     start->without = wo;
-
     start->location = 0;
     start->upperBound = reduction;
 
-    solve(start);
-    std::cout << "\nCost is " << distanceBest << std::endl;
+    solveTSP(start);
 }
 
-void BranchAndBound::solve(BranchAndBoundNode *root) {
+void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
     std::stack<BranchAndBoundNode *> lifoQueue;
     lifoQueue.push(root);
 
@@ -71,9 +67,15 @@ void BranchAndBound::solve(BranchAndBoundNode *root) {
         }
 
         // Przeszukiwanie w glab dopoki nie pozostanie macierz 2x2
-        //if (node->location == matrixSize - 2) {
         if (node->with.size() == matrixSize - 2) {
-            auto rem = addRemainingEdgesOfOpportunityMatrix(node->data, node->size, node->with);
+            bool outIsSuccess = false;
+            auto rem = addRemainingEdgesOfOpportunityMatrix(node->data, node->size, node->with, outIsSuccess);
+
+            if (!outIsSuccess) {
+                std::cout << "\n============ ERROR ============\n";
+                delete node;
+                continue;
+            }
             for (const auto &item: rem) {
                 node->upperBound += item.second;
                 node->with.push_back(item.first);
@@ -81,15 +83,14 @@ void BranchAndBound::solve(BranchAndBoundNode *root) {
             if (node->upperBound < distanceBest) {
                 distanceBest = node->upperBound;
                 withBest = std::vector<std::pair<int, int >>(node->with);
-                bestNodeFound = new BranchAndBoundNode(*node);
+                pathBest = pathCurrentNode;
             }
 
-            BranchAndBoundNode::sort_stack_cmp(lifoQueue);
             delete node;
             continue;
         }
 
-        auto values = chooseWorstCase(node->data, node->size);
+        auto values = chooseBestCaseEdge(node->data, node->size);
         int row = values.second.first;
         int column = values.second.second;
 
@@ -128,63 +129,29 @@ void BranchAndBound::solve(BranchAndBoundNode *root) {
 }
 
 std::vector<std::pair<std::pair<int, int>, int>>
-BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with) {
+BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with,
+                                                     bool &outSuccess) {
     std::vector<std::pair<std::pair<int, int>, int >> result;
     auto remaining = getAllRemainingEdges(matrix, size);
 
-    // TODO nie dziala dobieranie  - wczesniej out byl 1 kratka z macierzy 2x2 ale nie sprawdza sie dla generowanych
-    // byc moze metoda to path , pozniej jeden luk z brakujacych samych
-    // a pozniej jeszcze +1 zawiracacy taki ktory nie byl wybrany
+    // TODO czasem nie udaje sie dobrac sciezki
 
-    std::vector<int> firstVerticesRemaining;
-    std::vector<int> secondVerticesRemaining;
-    for (int i = 0; i < size; i++) {
-        auto itFirst = std::find_if(with.begin(), with.end(),
-                                    [&i](const pair<int, int> &p) { return p.first == i; });
-        auto itSecond = std::find_if(with.begin(), with.end(),
-                                     [&i](const pair<int, int> &p) { return p.second == i; });
-        if (itFirst == with.end()) {
-            firstVerticesRemaining.push_back(i);
-        }
-        if (itSecond == with.end()) {
-            secondVerticesRemaining.push_back(i);
-        }
-    }
-    std::vector<int> firstVerticesFound;
-    std::vector<int> secondVerticesFound;
-    std::pair<std::pair<int, int>, std::pair<int, int>> match;
+    std::pair<std::pair<int, int>, std::pair<int, int>> match = {{0, 0},
+                                                                 {0, 0}};
+    bool success = false;
     for (const auto &item1: remaining) {
+        if (success) break;
         for (const auto &item2: remaining) {
-            if (item1 == item2) continue;
-            firstVerticesFound.push_back(item1.first);
-            firstVerticesFound.push_back(item2.first);
-            secondVerticesFound.push_back(item1.second);
-            secondVerticesFound.push_back(item2.second);
-
-            std::sort(firstVerticesFound.begin(), firstVerticesFound.end());
-            std::sort(firstVerticesRemaining.begin(), firstVerticesRemaining.end());
-            std::sort(secondVerticesFound.begin(), secondVerticesFound.end());
-            std::sort(secondVerticesRemaining.begin(), secondVerticesRemaining.end());
-            if (firstVerticesFound == firstVerticesRemaining && secondVerticesFound == secondVerticesRemaining) {
+            if (item2 == item1) continue;
+            bool p = tryMakePath(with, item1, item2);
+            if (p) {
                 match = std::make_pair(item1, item2);
+                success = true;
                 break;
-            } else {
-                firstVerticesFound.clear();
-                secondVerticesFound.clear();
             }
         }
     }
-
-    std::cout << "\n=============\n";
-    for (auto &i: remaining) {
-        std::cout << i.first + 1 << " -> "
-                  << i.second + 1 << std::endl;
-    }
-    std::cout << "\n======DODANE=======\n";
-    std::cout << match.first.first << " " << match.first.second << "||" << match.second.first << " "
-              << match.second.second;
-    std::cout << "\n=============\n";
-
+    outSuccess = success;
     result.push_back({{match.first.first, match.first.second}, matrix[match.first.first][match.first.second]});
     result.push_back({{match.second.first, match.second.second}, matrix[match.second.first][match.second.second]});
     return result;
@@ -198,49 +165,6 @@ BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, con
 //    std::cout << match.first.first << " " << match.first.second << "||" << match.second.first << " "
 //              << match.second.second;
 //    std::cout << "\n=============\n";
-/////////////////////////////////////
-
-//    std::cout << "\n=============\n";
-//    for (auto &i: remaining) {
-//        std::cout << i.first + 1 << " -> "
-//                  << i.second + 1 << std::endl;
-//    }
-//    std::cout << "\n=============\n";
-//
-//    std::vector<int> vertexOccurrences;
-//    for (const auto &item: with) {
-//        vertexOccurrences.push_back(item.first);
-//        vertexOccurrences.push_back(item.second);
-//    }
-//
-//    std::vector<int> incomplete;
-//    for (const auto &item: vertexOccurrences) {
-//        if (std::count(vertexOccurrences.begin(), vertexOccurrences.end(), item) != 2) {
-//            if (std::find(incomplete.begin(), incomplete.end(), item) == incomplete.end()) {
-//                incomplete.push_back(item);
-//            }
-//        }
-//    }
-//    std::cout << "\n=============\n";
-//    for (const auto &item: incomplete) {
-//        std::cout << item + 1 << std::endl;
-//
-//    }
-//    std::cout << "\n=============\n";
-//
-//    for (const auto &item: remaining) {
-////        if ((item.first == incomplete.first && item.second == incomplete.second) ||
-////            (item.first == incomplete.second && item.second == incomplete.first)) {
-////            continue;
-////        }
-//        if ((std::find(incomplete.begin(), incomplete.end(), item.first) != incomplete.end()) &&
-//            (std::find(incomplete.begin(), incomplete.end(), item.second) != incomplete.end())) {
-//            continue;
-//        }
-//
-//        result.push_back({{item.first, item.second}, matrix[item.first][item.second]});
-//    }
-//    return result;
 }
 
 std::vector<std::pair<int, int>> BranchAndBound::getAllRemainingEdges(int **matrix, int size) {
@@ -264,12 +188,14 @@ std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, 
         branch1Matrix[i] = new int[size];
         branch2Matrix[i] = new int[size];
     }
-
     for (int i = 0; i < size; i++) {
         if (i == row) {
             for (int j = 0; j < size; j++) {
                 branch1Matrix[i][j] = INF;
                 branch2Matrix[i][j] = matrix[i][j];
+                if (j == column) {
+                    branch2Matrix[i][j] = INF;
+                }
             }
             continue;
         }
@@ -289,14 +215,17 @@ std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, 
     return {branch1Matrix, branch2Matrix};
 }
 
-// najpierw idzie chooseWorstCase -> potem split i po splicie trzeba wywolywac ta funckje
 int BranchAndBound::updateMatrixLeft(int **matrix, int size, const std::vector<pair<int, int>> &with) {
-    // przeiterowac po path, sprawdzic czy jakies sie nie powtarzaja krancami -> wtedy INF
+    // Iterowanie po lukasz sciezki, jesli luki tworza czesciowa sciezke (powtarzaja sie krancami) -> INF
     for (auto &i: with) {
         matrix[i.second][i.first] = INF;
         for (auto &j: with) {
+            if (i == j) continue;
             if (j.second == i.first) {
                 matrix[i.second][j.first] = INF;
+            }
+            if (j.first == i.second) {
+                matrix[j.first][i.second] = INF;
             }
         }
     }
@@ -373,7 +302,7 @@ int BranchAndBound::reduceColumns(int **matrix, int size) {
 }
 
 std::pair<int, std::pair<int, int>>
-BranchAndBound::chooseWorstCase(int **matrix, int size) {
+BranchAndBound::chooseBestCaseEdge(int **matrix, int size) {
     int x = 0, y = 0;
     int value = -1;
     for (int i = 0; i < size; i++) {
@@ -404,4 +333,53 @@ int BranchAndBound::getMinimumDefined(int **matrix, int row, int column, int siz
         }
     }
     return valueRow + valueColumn;
+}
+
+bool BranchAndBound::tryMakePath(const std::vector<pair<int, int>> &with, std::pair<int, int> firstPair,
+                                 std::pair<int, int> secondPair) {
+    std::vector<pair<int, int>> tmp = std::vector<pair<int, int>>(with);
+    tmp.push_back(firstPair);
+    tmp.push_back(secondPair);
+
+    pair<int, int> firstElement = tmp.at(0);
+    pair<int, int> currentElement = tmp.at(0);
+    std::vector<int> path;
+    path.push_back(currentElement.first);
+    while (path.size() != matrixSize + 1) {
+        auto it = std::find_if(tmp.begin(), tmp.end(),
+                               [&currentElement](pair<int, int> element) {
+                                   return element.first == currentElement.second;
+                               });
+        if (it != tmp.end()) {
+            path.push_back(currentElement.second);
+            currentElement = *it;
+        } else {
+            return false;
+        }
+
+        if (currentElement == firstElement && path.size() != matrixSize + 1) {
+            return false;
+        }
+    }
+    pathCurrentNode = std::vector<int>(path);
+
+    vector<int> check;
+    check.push_back(firstElement.first);
+    for (int i = 0; i < matrixSize; i++) {
+        check.push_back(i);
+    }
+
+    std::sort(check.begin(), check.end());
+    std::sort(path.begin(), path.end());
+
+    if (check == path) {
+//        std::cout << "\n=======================\n";
+//        for (const auto &item: path) {
+//            std::cout << item << ", ";
+//        }
+//        std::cout << "\n=======================\n";
+        return true;
+    }
+    // TODO zdebugowac co sie dzieje w przypadku errora... -> dziwne symbole wtedy
+    return false;
 }
