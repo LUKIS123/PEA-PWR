@@ -47,7 +47,7 @@ void List::pushEnd(int data) {
 void List::displayFromFront() {
     ListElem *current = head;
     while (current != nullptr) {
-        std::cout << "[ " << current->data << " ]";
+        std::cout << current->data << ", ";
         current = current->next;
     }
     if (size == 0) {

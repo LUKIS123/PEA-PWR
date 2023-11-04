@@ -12,7 +12,6 @@ class BranchAndBound {
 private:
     int **inputMatrix = nullptr;
     int matrixSize = 0;
-    int **rootMatrix = nullptr;
 public:
     std::vector<std::pair<int, int>> withBest;
     int distanceBest = INT_MAX;

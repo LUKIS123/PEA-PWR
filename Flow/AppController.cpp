@@ -10,7 +10,7 @@ AppController::AppController() {
     matrix = new Matrix();
     bruteForce = new BruteForce();
     branchAndBound = new BranchAndBound();
-
+    dynamicProgramming = new DynamicProgramming();
     // Testy
     automaticTests = new AutomaticTests(randomDataGenerator, generator, matrix, bruteForce);
 }
@@ -96,8 +96,8 @@ void AppController::generateMatrix() {
 }
 
 void AppController::algorithmMenu() {
-    if (matrix->getSize() == 0) {
-        std::cout << "Matrix is empty!";
+    if (matrix->getSize() < 2) {
+        std::cout << "Wrong input!";
         system("PAUSE");
         return;
     }
@@ -117,6 +117,10 @@ void AppController::algorithmMenu() {
                 break;
             case ActionResult::RUN_BRANCH_AND_BOUND:
                 runBranchAndBound();
+                status = ActionResult::BACK_TO_ALGORITHMS_MENU;
+                break;
+            case ActionResult::RUN_DYNAMIC:
+                runDynamic();
                 status = ActionResult::BACK_TO_ALGORITHMS_MENU;
                 break;
             case ActionResult::DISPLAY_LATEST_RESULTS:
@@ -154,17 +158,17 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
 }
 
 void AppController::runBranchAndBound() {
-    BranchAndBoundNew *bb = new BranchAndBoundNew();
-    long long start2 = Timer::read_QPC();
-    bb->mainFun(matrix, matrix->getSize());
-    long long end2 = Timer::read_QPC();
-    latestTimerResult = Timer::getMicroSecondsElapsed(start2, end2);
-    bb->printPath();
-    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
-    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
-    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
-    std::cout << "\n====================================\n";
-    system("PAUSE");
+//    BranchAndBoundNew *bb = new BranchAndBoundNew();
+//    long long start2 = Timer::read_QPC();
+//    bb->mainFun(inputMatrix, inputMatrix->getSize());
+//    long long end2 = Timer::read_QPC();
+//    latestTimerResult = Timer::getMicroSecondsElapsed(start2, end2);
+//    bb->printPath();
+//    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+//    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+//    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
+//    std::cout << "\n====================================\n";
+//    system("PAUSE");
 
     long long start = Timer::read_QPC();
     branchAndBound->mainFun(matrix, matrix->getSize());
@@ -176,11 +180,25 @@ void AppController::runBranchAndBound() {
     std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
+    system("PAUSE");
+}
 
+void AppController::runDynamic() {
+    long long start = Timer::read_QPC();
+    dynamicProgramming->mainFun(matrix, matrix->getSize());
+    long long end = Timer::read_QPC();
+    latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
+    latestRun = LatestAlgorithm::DYNAMIC;
+
+    dynamicProgramming->displayLatestResults();
+    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
     system("PAUSE");
 }
 
 void AppController::displayLatestResults() {
+    std::cout << "algorithm: ";
     switch (latestRun) {
         case BRUTE_FORCE:
             std::cout << algorithmTypes[0] << std::endl;
@@ -191,15 +209,24 @@ void AppController::displayLatestResults() {
         case BRANCH_AND_BOUND:
             std::cout << algorithmTypes[2] << std::endl;
             break;
+        case DYNAMIC:
+            std::cout << algorithmTypes[3] << std::endl;
+            break;
         default:
             break;
     }
     if (latestRun == LatestAlgorithm::BRUTE_FORCE_OPT || latestRun == LatestAlgorithm::BRUTE_FORCE) {
         bruteForce->displayLatestResults();
-        std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
-        std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
-        std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
     }
+    if (latestRun == LatestAlgorithm::BRANCH_AND_BOUND) {
+        branchAndBound->displayLatestResults();
+    }
+    if (latestRun == LatestAlgorithm::DYNAMIC) {
+        dynamicProgramming->displayLatestResults();
+    }
+    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
+    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
     system("PAUSE");
 }
 

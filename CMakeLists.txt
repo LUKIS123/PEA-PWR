@@ -34,4 +34,6 @@ add_executable(PEA_PWR main.cpp
         Algorithms/BranchAndBoundNew.h
         Algorithms/Utils/Node.cpp
         Algorithms/Utils/Node.h
+        Algorithms/DynamicProgramming.h
+        Algorithms/DynamicProgramming.cpp
 )

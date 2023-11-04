@@ -4,11 +4,11 @@
 
 
 void BranchAndBound::displayLatestResults() {
-    std::cout << std::endl;
     for (auto &i: withBest) {
-        std::cout << i.first + 1 << " -> "
-                  << i.second + 1 << std::endl;
+        std::cout << "( " << i.first << " -> "
+                  << i.second << " ), \n";
     }
+    std::cout << std::endl;
     std::cout << "Path: ";
     for (const auto &item: pathBest) {
         std::cout << item << ", ";
@@ -22,7 +22,7 @@ void BranchAndBound::mainFun(Matrix *matrix, int matrixSize) {
     this->inputMatrix = matrix->getMatrix();
     this->distanceBest = INF;
 
-    rootMatrix = new int *[matrixSize];
+    int **rootMatrix = new int *[matrixSize];
     for (int i = 0; i < matrixSize; i++) {
         rootMatrix[i] = new int[matrixSize];
     }
@@ -72,7 +72,8 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
             auto rem = addRemainingEdgesOfOpportunityMatrix(node->data, node->size, node->with, outIsSuccess);
 
             if (!outIsSuccess) {
-                std::cout << "\n============ ERROR ============\n";
+                // todo poprawki
+                // std::cout << "\n============ ERROR ============\n";
                 delete node;
                 continue;
             }
@@ -115,12 +116,40 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
         right->without.emplace_back(row, column);
         right->with.insert(std::end(right->with), std::begin(node->with), std::end(node->with));
 
-        if (cl < cr) {
-            lifoQueue.push(right);
-            lifoQueue.push(left);
-        } else {
-            lifoQueue.push(left);
-            lifoQueue.push(right);
+        if (distanceBest == INF) {
+            if (cl < cr) {
+                lifoQueue.push(right);
+                lifoQueue.push(left);
+            } else {
+                lifoQueue.push(left);
+                lifoQueue.push(right);
+            }
+        }
+
+        if (distanceBest != INF) {
+            if (cl < cr) {
+                if (right->upperBound < distanceBest) {
+                    lifoQueue.push(right);
+                } else {
+                    delete right;
+                }
+                if (left->upperBound < distanceBest) {
+                    lifoQueue.push(left);
+                } else {
+                    delete left;
+                }
+            } else {
+                if (left->upperBound < distanceBest) {
+                    lifoQueue.push(left);
+                } else {
+                    delete left;
+                }
+                if (right->upperBound < distanceBest) {
+                    lifoQueue.push(right);
+                } else {
+                    delete right;
+                }
+            }
         }
 
         delete node;
