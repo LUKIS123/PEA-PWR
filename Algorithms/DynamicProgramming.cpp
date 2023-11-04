@@ -40,7 +40,6 @@ void DynamicProgramming::mainFun(Matrix *matrix, int matrixSize) {
 //    this->inputMatrix = distanceMatrix;
     ////////////////////////////////////////////
 
-    int startVertex = 0;
     memo = new int *[matrixSize];
     for (int i = 0; i < matrixSize; i++) {
         memo[i] = new int[1 << matrixSize];
@@ -55,10 +54,10 @@ void DynamicProgramming::mainFun(Matrix *matrix, int matrixSize) {
         tour.clear();
     }
 
+    int startVertex = 0;
     solve(startVertex);
-    return;
 
-    solveTSP(startVertex);
+    // solveTSP(startVertex);
 }
 
 void DynamicProgramming::solveTSP(int startVertex) {
@@ -204,7 +203,7 @@ int DynamicProgramming::TSP(int i, int state) {
         if ((state & (1 << next)) != 0) continue;
 
         int nextState = state | (1 << next);
-        double newCost = inputMatrix[i][next] + TSP(next, nextState);
+        int newCost = inputMatrix[i][next] + TSP(next, nextState);
         if (newCost < minCost) {
             index = next;
             minCost = newCost;
