@@ -72,8 +72,7 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
             auto rem = addRemainingEdgesOfOpportunityMatrix(node->data, node->size, node->with, outIsSuccess);
 
             if (!outIsSuccess) {
-                // todo poprawki
-                // std::cout << "\n============ ERROR ============\n";
+                // todo pop
                 delete node;
                 continue;
             }
@@ -162,8 +161,6 @@ BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, con
                                                      bool &outSuccess) {
     std::vector<std::pair<std::pair<int, int>, int >> result;
     auto remaining = getAllRemainingEdges(matrix, size);
-
-    // TODO czasem nie udaje sie dobrac sciezki
 
     std::pair<std::pair<int, int>, std::pair<int, int>> match = {{0, 0},
                                                                  {0, 0}};
@@ -409,6 +406,7 @@ bool BranchAndBound::tryMakePath(const std::vector<pair<int, int>> &with, std::p
 //        std::cout << "\n=======================\n";
         return true;
     }
+    
     // TODO zdebugowac co sie dzieje w przypadku errora... -> dziwne symbole wtedy
     return false;
 }

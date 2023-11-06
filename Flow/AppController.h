@@ -13,7 +13,6 @@
 #include "../Algorithms/BranchAndBound.h"
 #include "../Algorithms/DynamicProgramming.h"
 
-#include "../Algorithms/BranchAndBoundNew.h"
 
 class AppController {
 private:
