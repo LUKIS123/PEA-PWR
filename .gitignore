@@ -4,3 +4,5 @@
 .idea
 cmake-build-release
 cmake-build-debug-mingw
+.vs
+out

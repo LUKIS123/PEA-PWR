@@ -44,7 +44,7 @@ ActionResult::algorithmsMenu ConsoleView::algorithmsMenu() {
     std::cout << "1 => Run BRUTE FORCE" << std::endl;
     std::cout << "2 => Run BRUTE FORCE with Optimization" << std::endl;
     std::cout << "3 => Run BRANCH AND BOUND" << std::endl;
-    //std::cout << "4 => Run DYNAMIC PROGRAMMING" << std::endl;
+    std::cout << "4 => Run DYNAMIC PROGRAMMING" << std::endl;
     std::cout << "5 => Display latest results" << std::endl;
     std::cout << "0 => Return" << std::endl;
 

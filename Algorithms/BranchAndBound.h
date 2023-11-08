@@ -17,6 +17,7 @@ public:
     int distanceBest = INT_MAX;
     std::vector<int> pathBest;
     std::vector<int> pathCurrentNode;
+    std::vector<int> visitedRows;
 
     BranchAndBound() = default;
 
@@ -46,9 +47,13 @@ public:
 
     static vector<pair<int, int>> getAllRemainingEdges(int **matrix, int size);
 
-    static std::pair<int, std::pair<int, int>> chooseBestCaseEdge(int **matrix, int size);
+    static std::pair<int, std::pair<int, int>> chooseBestCaseEdge(int **matrix, int size, bool &outSuccess);
 
     bool tryMakePath(const vector<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
+
+    void displ(int **matrix, int size);
+
+    static vector<pair<pair<int, int>, pair<int, int>>> sortToPath(const std::vector<pair<int, int>> &with);
 };
 
 

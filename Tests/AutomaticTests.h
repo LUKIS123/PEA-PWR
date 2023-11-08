@@ -2,6 +2,7 @@
 #define PEA_PWR_AUTOMATICTESTS_H
 
 #include "iostream"
+#include "limits"
 #include "../Flow/ActionResult.h"
 #include "../Flow/ConsoleView.h"
 #include "../RandomDataGenerator/RandomDataGenerator.h"
