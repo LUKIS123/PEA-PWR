@@ -12,7 +12,8 @@ AppController::AppController() {
     branchAndBound = new BranchAndBound();
     dynamicProgramming = new DynamicProgramming();
     // Testy
-    automaticTests = new AutomaticTests(randomDataGenerator, generator, matrix, bruteForce);
+    automaticTests = new AutomaticTests(randomDataGenerator, generator, matrix, bruteForce, branchAndBound,
+                                        dynamicProgramming);
 }
 
 AppController::~AppController() {
@@ -158,18 +159,6 @@ void AppController::runBruteForce(bool ifOptimizedAlgorithm) {
 }
 
 void AppController::runBranchAndBound() {
-//    BranchAndBoundNew *bb = new BranchAndBoundNew();
-//    long long start2 = Timer::read_QPC();
-//    bb->mainFun(inputMatrix, inputMatrix->getSize());
-//    long long end2 = Timer::read_QPC();
-//    latestTimerResult = Timer::getMicroSecondsElapsed(start2, end2);
-//    bb->printPath();
-//    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
-//    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
-//    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
-//    std::cout << "\n====================================\n";
-//    system("PAUSE");
-
     long long start = Timer::read_QPC();
     branchAndBound->mainFun(matrix, matrix->getSize());
     long long end = Timer::read_QPC();

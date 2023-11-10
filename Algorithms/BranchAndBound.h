@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <algorithm>
-#include <stack>
 #include <vector>
 #include "./Utils/BranchAndBoundNode.h"
 #include "../Matrix/Matrix.h"
@@ -17,7 +16,7 @@ public:
     int distanceBest = INT_MAX;
     std::vector<int> pathBest;
     std::vector<int> pathCurrentNode;
-    std::vector<int> visitedRows;
+    int vertices = 0;
 
     BranchAndBound() = default;
 
@@ -51,9 +50,7 @@ public:
 
     bool tryMakePath(const vector<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
 
-    void displ(int **matrix, int size);
-
-    static vector<pair<pair<int, int>, pair<int, int>>> sortToPath(const std::vector<pair<int, int>> &with);
+    static bool checkForLoops(const vector<pair<int, int>> &with);
 };
 
 

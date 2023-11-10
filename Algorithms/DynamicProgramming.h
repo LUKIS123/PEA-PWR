@@ -11,12 +11,12 @@ private:
     int **inputMatrix = nullptr;
     int matrixSize = 0;
 public:
-    int **memo = nullptr;
+    int **cache = nullptr;
     int distanceBest = INT_MAX;
-    std::vector<int> tour;
-    int **prev = nullptr;
-    int FINISHED_STATE;
-    int START_NODE;
+    std::vector<int> path;
+    int **previous = nullptr;
+    int FINISHED_STATE = NULL;
+    int START_NODE = NULL;
 
     DynamicProgramming() = default;
 
@@ -26,17 +26,9 @@ public:
 
     void mainFun(Matrix *matrix, int matrixSize);
 
-    void solveTSP(int startVertex);
-
-    static bool notIn(int element, int subset);
-
-    static std::vector<int> combinations(int r, int n);
-
-    static void combinations(int set, int at, int r, int n, std::vector<int> subsets);
-
     void solve(int start);
 
-    int TSP(int i, int state);
+    int TSP(int currentVertex, int currentState);
 
     void clearData();
 };

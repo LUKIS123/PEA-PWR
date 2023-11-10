@@ -37,6 +37,7 @@ void Matrix::generate(int newSize, RandomDataGenerator::generator *numberGenerat
 }
 
 void Matrix::generateAnew(RandomDataGenerator::generator *numberGenerator) {
+    numberGenerator->setDist(distanceValueLimit);
     if (!exists) {
         return;
     }

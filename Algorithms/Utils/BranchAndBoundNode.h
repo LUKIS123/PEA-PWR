@@ -16,6 +16,7 @@ public:
     int upperBound = 0;
     vector<pair<int, int>> with;
     vector<pair<int, int>> without;
+    bool isKilled = false;
 
     BranchAndBoundNode(int **data, int size);
 
@@ -30,6 +31,13 @@ public:
     bool operator>(const BranchAndBoundNode &other) const {
         return upperBound > other.upperBound;
     }
+
+    class comp {
+    public:
+        bool operator()(const BranchAndBoundNode *lhs, const BranchAndBoundNode *rhs) const {
+            return lhs->upperBound > rhs->upperBound;
+        }
+    };
 };
 
 
