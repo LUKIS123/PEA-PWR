@@ -1,9 +1,9 @@
 #ifndef PEA_PWR_TIMER_H
 #define PEA_PWR_TIMER_H
 
-#include "windows.h"
-#include "iostream"
-#include "iomanip"
+#include <windows.h>
+#include <iostream>
+#include <iomanip>
 
 class Timer {
 public:

@@ -1,10 +1,13 @@
 #ifndef PEA_PWR_AUTOMATICTESTS_H
 #define PEA_PWR_AUTOMATICTESTS_H
 
-#include "iostream"
-#include "limits"
+#include <iostream>
+#include <limits>
 #include <algorithm>
 #include <vector>
+#include <thread>
+#include <future>
+#include <chrono>
 #include "../FileUtils/DataFileUtility.h"
 #include "../Flow/ActionResult.h"
 #include "../Flow/ConsoleView.h"
@@ -45,7 +48,36 @@ public:
     void testBranchAndBound();
 
     void testDynamic();
-};
 
+    // Multithreading
+
+    static void stop_thr_fun(std::jthread &th, std::atomic<int> &stop) {
+        Sleep(120000);
+        if (stop == 1) {
+            return;
+        }
+        if (!th.joinable()) {
+            return;
+        }
+        stop_source ss = th.get_stop_source();
+        if (ss.stop_possible()) {
+            stop = 2;
+            th.request_stop();
+        }
+    }
+
+    static void
+    run_bf_fun(BruteForce *pBruteForce, Matrix *pMatrix, std::atomic<int> &finished, std::promise<double> &&p) {
+        long long int start, end;
+        start = Timer::read_QPC();
+        pBruteForce->mainFun(pMatrix, pMatrix->getSize(), false);
+        end = Timer::read_QPC();
+        if (finished != 2) {
+            finished = 1;
+        }
+        p.set_value(Timer::getMicroSecondsElapsed(start, end));
+    };
+
+};
 
 #endif //PEA_PWR_AUTOMATICTESTS_H

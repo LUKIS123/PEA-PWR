@@ -1,8 +1,8 @@
 #ifndef PEA_PWR_RANDOMDATAGENERATOR_H
 #define PEA_PWR_RANDOMDATAGENERATOR_H
 
-#include "iostream"
-#include "random"
+#include <iostream>
+#include <random>
 
 class RandomDataGenerator {
 private:

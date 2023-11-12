@@ -95,24 +95,34 @@ void AutomaticTests::updateTestCount() {
 }
 
 void AutomaticTests::testBruteForce() {
-    std::string fileName = "../Resources/Tests/BruteForce.csv";
+    std::string fileName = "../Resources/Tests/BruteNOWE.csv";
     std::string cols = "us,ms,s";
     std::vector<double> resultsUS;
     std::vector<double> resultsMS;
     std::vector<double> resultsS;
 
-    long long int start, end;
     double results;
     for (int i = 0; i < testNumber; i++) {
-        start = Timer::read_QPC();
-        bruteForce->mainFun(matrix, matrix->getSize(), false);
-        end = Timer::read_QPC();
-        results = Timer::getMicroSecondsElapsed(start, end);
-        resultsUS.push_back(results);
-        resultsMS.push_back(results / 1000);
-        resultsS.push_back(results / 1000000);
+        std::promise<double> p;
+        std::atomic<int> done = 0;
+        auto f = p.get_future();
+        std::jthread thr(run_bf_fun, bruteForce, matrix, std::ref(done), std::move(p));
+        std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done));
+        stop_thr.join();
+        thr.join();
+        if (done == 1) {
+            try {
+                results = f.get();
+                resultsUS.push_back(results);
+                resultsMS.push_back(results / 1000);
+                resultsS.push_back(results / 1000000);
+            }
+            catch (...) {
+            }
+        }
         matrix->generateAnew(generator);
     }
+
     DataFileUtility::saveAutomaticTestResults(fileName, resultsUS, resultsMS, resultsS, cols);
     std::cout << "Done!" << std::endl;
     system("PAUSE");

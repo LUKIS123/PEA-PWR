@@ -19,7 +19,8 @@ BranchAndBoundNode::BranchAndBoundNode(BranchAndBoundNode &node) {
     data = node.data;
     size = node.size;
     location = node.location;
-    upperBound = node.upperBound;
+    lowerBound = node.lowerBound;
     with = node.with;
     without = node.without;
+    subTours = node.subTours;
 }

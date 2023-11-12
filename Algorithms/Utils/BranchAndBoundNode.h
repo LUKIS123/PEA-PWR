@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <stack>
+#include <list>
 
 using namespace std;
 
@@ -13,10 +13,10 @@ public:
     int size;
     int location;
 
-    int upperBound = 0;
+    int lowerBound = 0;
     vector<pair<int, int>> with;
     vector<pair<int, int>> without;
-    bool isKilled = false;
+    vector<list < int>> subTours;
 
     BranchAndBoundNode(int **data, int size);
 
@@ -25,17 +25,17 @@ public:
     virtual ~BranchAndBoundNode();
 
     bool operator<(const BranchAndBoundNode &other) const {
-        return upperBound < other.upperBound;
+        return lowerBound < other.lowerBound;
     }
 
     bool operator>(const BranchAndBoundNode &other) const {
-        return upperBound > other.upperBound;
+        return lowerBound > other.lowerBound;
     }
 
     class comp {
     public:
         bool operator()(const BranchAndBoundNode *lhs, const BranchAndBoundNode *rhs) const {
-            return lhs->upperBound > rhs->upperBound;
+            return lhs->lowerBound > rhs->lowerBound;
         }
     };
 };

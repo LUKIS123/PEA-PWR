@@ -16,7 +16,6 @@ public:
     int distanceBest = INT_MAX;
     std::vector<int> pathBest;
     std::vector<int> pathCurrentNode;
-    int vertices = 0;
 
     BranchAndBound() = default;
 
@@ -36,7 +35,7 @@ public:
 
     static pair<int **, int **> splitBranches(int **matrix, int size, int row, int column);
 
-    static int updateMatrixLeft(int **matrix, int size, const std::vector<pair<int, int>> &with);
+    int updateMatrixLeft(int **matrix, int size, const std::vector<pair<int, int>> &with);
 
     static int updateMatrixRight(int **matrix, int size, int row, int column);
 
@@ -50,7 +49,7 @@ public:
 
     bool tryMakePath(const vector<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
 
-    static bool checkForLoops(const vector<pair<int, int>> &with);
+    std::vector<std::list<int>> buildSubToursFromEdges(std::pair<int, int> edge, const vector<std::list<int>> &subTours);
 };
 
 

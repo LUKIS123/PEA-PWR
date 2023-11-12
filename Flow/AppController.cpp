@@ -1,6 +1,5 @@
 #include "AppController.h"
 #include <limits>
-#include <string>
 #include <cmath>
 
 AppController::AppController() {

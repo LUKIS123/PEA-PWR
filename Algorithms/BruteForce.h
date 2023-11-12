@@ -1,7 +1,7 @@
 #ifndef PEA_PWR_BRUTEFORCE_H
 #define PEA_PWR_BRUTEFORCE_H
 
-#include "iostream"
+#include <iostream>
 #include "Utils/List.h"
 #include "../Matrix/Matrix.h"
 
