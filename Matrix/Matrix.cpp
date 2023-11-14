@@ -86,6 +86,7 @@ void Matrix::loadFromFile(const std::string &filename) {
         }
     } else {
         std::cout << "File error - OPEN" << std::endl;
+        exists = false;
     }
 }
 

@@ -50,7 +50,6 @@ public:
     void testDynamic();
 
     // Multithreading
-
     static void stop_thr_fun(std::jthread &th, std::atomic<int> &stop) {
         Sleep(120000);
         if (stop == 1) {

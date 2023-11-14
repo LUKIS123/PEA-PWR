@@ -96,8 +96,8 @@ void AppController::generateMatrix() {
 }
 
 void AppController::algorithmMenu() {
-    if (matrix->getSize() < 2) {
-        std::cout << "Wrong input!";
+    if (!matrix->exists || matrix->getSize() < 2) {
+        std::cout << "ERROR! No matrix loaded or input invalid!";
         system("PAUSE");
         return;
     }

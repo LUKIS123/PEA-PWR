@@ -7,16 +7,20 @@
 
 using namespace std;
 
+// Obiekt wezla poddrzewa posiada takie atrybuty jak
+// macierz poddrzewa, rozmiar macierzy, ograniczenie, liste krawedzi ktore zawiera, liste krawedzi odrzucownych, liste podsciezek
 class BranchAndBoundNode {
 public:
     int **data;
     int size;
-    int location;
 
     int lowerBound = 0;
+    // Lista krawedzi ktore zawiera
     vector<pair<int, int>> with;
+    // Lista krawedzi odrzucownych
     vector<pair<int, int>> without;
-    vector<list < int>> subTours;
+    // Lista podsciezek
+    list <list<int>> subTours;
 
     BranchAndBoundNode(int **data, int size);
 

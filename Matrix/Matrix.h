@@ -12,7 +12,7 @@ private:
 public:
     bool testing = false;
     bool exists = false;
-    int distanceValueLimit = 100;
+    int distanceValueLimit = 1000;
 
     Matrix();
 
@@ -32,7 +32,6 @@ public:
 
 private:
     void clearData();
-
 };
 
 #endif //PEA_PWR_MATRIX_H

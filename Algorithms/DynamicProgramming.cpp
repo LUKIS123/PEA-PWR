@@ -27,8 +27,6 @@ void DynamicProgramming::mainFun(Matrix *matrix, int matrixSize) {
 
     for (int i = 0; i < matrixSize; i++) {
         cache[i] = new int[1 << matrixSize];
-    }
-    for (int i = 0; i < matrixSize; i++) {
         previous[i] = new int[1 << matrixSize];
     }
 

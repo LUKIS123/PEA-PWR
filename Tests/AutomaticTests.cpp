@@ -95,7 +95,7 @@ void AutomaticTests::updateTestCount() {
 }
 
 void AutomaticTests::testBruteForce() {
-    std::string fileName = "../Resources/Tests/BruteNOWE.csv";
+    std::string fileName = "../Resources/Tests/BruteForce.csv";
     std::string cols = "us,ms,s";
     std::vector<double> resultsUS;
     std::vector<double> resultsMS;

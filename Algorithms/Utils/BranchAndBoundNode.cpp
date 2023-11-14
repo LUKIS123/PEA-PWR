@@ -12,13 +12,12 @@ BranchAndBoundNode::~BranchAndBoundNode() {
 
 BranchAndBoundNode::BranchAndBoundNode(int **data, int size)
         : data(data), size(size) {
-
 }
 
+// Konstruktor kopiujacy
 BranchAndBoundNode::BranchAndBoundNode(BranchAndBoundNode &node) {
     data = node.data;
     size = node.size;
-    location = node.location;
     lowerBound = node.lowerBound;
     with = node.with;
     without = node.without;

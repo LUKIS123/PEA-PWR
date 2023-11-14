@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include "./Utils/BranchAndBoundNode.h"
 #include "../Matrix/Matrix.h"
 
@@ -12,8 +13,8 @@ private:
     int **inputMatrix = nullptr;
     int matrixSize = 0;
 public:
-    std::vector<std::pair<int, int>> withBest;
     int distanceBest = INT_MAX;
+    std::vector<std::pair<int, int>> withBest;
     std::vector<int> pathBest;
     std::vector<int> pathCurrentNode;
 
@@ -35,7 +36,8 @@ public:
 
     static pair<int **, int **> splitBranches(int **matrix, int size, int row, int column);
 
-    int updateMatrixLeft(int **matrix, int size, const std::vector<pair<int, int>> &with);
+    static int updateMatrixLeft(int **matrix, int size, const vector<pair<int, int>> &with,
+                                const std::list<std::list<int>> &subTours);
 
     static int updateMatrixRight(int **matrix, int size, int row, int column);
 
@@ -49,7 +51,8 @@ public:
 
     bool tryMakePath(const vector<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
 
-    std::vector<std::list<int>> buildSubToursFromEdges(std::pair<int, int> edge, const vector<std::list<int>> &subTours);
+    static std::list<std::list<int>>
+    buildSubToursFromEdges(std::pair<int, int> edge, const list<std::list<int>> &subTours);
 };
 
 
