@@ -2,7 +2,6 @@
 #define PEA_PWR_BRANCHANDBOUNDNODE_H
 
 #include <iostream>
-#include <vector>
 #include <list>
 
 using namespace std;
@@ -14,13 +13,12 @@ public:
     int **data;
     int size;
 
+    // Dolne ograniczenie
     int lowerBound = 0;
-    // Lista krawedzi ktore zawiera
-    vector<pair<int, int>> with;
-    // Lista krawedzi odrzucownych
-    vector<pair<int, int>> without;
+    // Lista krawedzi ktore zawiera wezel drzewa
+    list<pair<int, int>> with;
     // Lista podsciezek
-    list <list<int>> subTours;
+    list<list<int>> subTours;
 
     BranchAndBoundNode(int **data, int size);
 

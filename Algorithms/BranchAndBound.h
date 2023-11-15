@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <list>
 #include <queue>
 #include "./Utils/BranchAndBoundNode.h"
 #include "../Matrix/Matrix.h"
@@ -14,9 +15,9 @@ private:
     int matrixSize = 0;
 public:
     int distanceBest = INT_MAX;
-    std::vector<std::pair<int, int>> withBest;
-    std::vector<int> pathBest;
-    std::vector<int> pathCurrentNode;
+    std::list<std::pair<int, int>> withBest;
+    std::list<int> pathBest;
+    std::list<int> pathCurrentNode;
 
     BranchAndBound() = default;
 
@@ -36,20 +37,20 @@ public:
 
     static pair<int **, int **> splitBranches(int **matrix, int size, int row, int column);
 
-    static int updateMatrixLeft(int **matrix, int size, const vector<pair<int, int>> &with,
+    static int updateMatrixLeft(int **matrix, int size, const std::list<pair<int, int>> &with,
                                 const std::list<std::list<int>> &subTours);
 
     static int updateMatrixRight(int **matrix, int size, int row, int column);
 
-    std::vector<std::pair<std::pair<int, int>, int>>
-    addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with,
+    std::list<std::pair<std::pair<int, int>, int>>
+    addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::list<pair<int, int>> &with,
                                          bool &outSuccess);
 
-    static vector<pair<int, int>> getAllRemainingEdges(int **matrix, int size);
+    static std::list<pair<int, int>> getAllRemainingEdges(int **matrix, int size);
 
     static std::pair<int, std::pair<int, int>> chooseBestCaseEdge(int **matrix, int size, bool &outSuccess);
 
-    bool tryMakePath(const vector<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
+    bool tryMakePath(const std::list<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
 
     static std::list<std::list<int>>
     buildSubToursFromEdges(std::pair<int, int> edge, const list<std::list<int>> &subTours);

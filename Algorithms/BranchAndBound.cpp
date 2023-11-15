@@ -2,6 +2,7 @@
 
 #define INF INT_MAX
 
+
 void BranchAndBound::displayLatestResults() {
     std::cout << "Edges:\n";
     for (auto &i: withBest) {
@@ -79,7 +80,7 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
             }
             if (node->lowerBound < distanceBest) {
                 distanceBest = node->lowerBound;
-                withBest = std::vector<std::pair<int, int >>(node->with);
+                withBest = std::list<std::pair<int, int >>(node->with);
                 pathBest = pathCurrentNode;
             }
             delete node;
@@ -96,7 +97,7 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
         int column = values.second.second;
 
         // Dodanie wybranego luku do listy krawedzi lewego poddrzewa
-        std::vector<pair<int, int>> leftSubtreeEdges = node->with;
+        std::list<pair<int, int>> leftSubtreeEdges = node->with;
         leftSubtreeEdges.emplace_back(row, column);
 
         // Podzial na lewe i prawe poddrzewo
@@ -110,14 +111,11 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
         left->lowerBound = node->lowerBound + cl;
         left->with.insert(std::end(left->with), std::begin(node->with), std::end(node->with));
         left->with.emplace_back(row, column);
-        left->without.insert(std::end(left->without), std::begin(node->without), std::end(node->without));
         left->subTours = subToursReduced;
 
         // Tworzenie prawego wezla poddrzewa
         auto *right = new BranchAndBoundNode(br.second, node->size);
         right->lowerBound = node->lowerBound + cr;
-        right->without.insert(std::end(right->without), std::begin(node->without), std::end(node->without));
-        right->without.emplace_back(row, column);
         right->with.insert(std::end(right->with), std::begin(node->with), std::end(node->with));
         right->subTours = node->subTours;
 
@@ -168,7 +166,7 @@ std::pair<int **, int **> BranchAndBound::splitBranches(int **matrix, int size, 
 }
 
 // Funkcja pomocnicza sluzaca do wpisania INF w celu zablokowania powstawania petli oraz redukcji macierzy lewego poddrzewa
-int BranchAndBound::updateMatrixLeft(int **matrix, int size, const vector<pair<int, int>> &with,
+int BranchAndBound::updateMatrixLeft(int **matrix, int size, const std::list<pair<int, int>> &with,
                                      const std::list<std::list<int>> &subTours) {
     // Iterowanie po lukach sciezki, jesli luki tworza czesciowa sciezke -> INF
     for (auto &i: with) {
@@ -295,10 +293,10 @@ int BranchAndBound::getMinimumDefined(int **matrix, int row, int column, int siz
 }
 
 // Funkcja dodajaca 2 pozostale krawedzie z macierzy 2x2
-std::vector<std::pair<std::pair<int, int>, int>>
-BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::vector<pair<int, int>> &with,
+std::list<std::pair<std::pair<int, int>, int>>
+BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, const std::list<pair<int, int>> &with,
                                                      bool &outSuccess) {
-    std::vector<std::pair<std::pair<int, int>, int >> result;
+    std::list<std::pair<std::pair<int, int>, int >> result;
     auto remaining = getAllRemainingEdges(matrix, size);
     std::pair<std::pair<int, int>, std::pair<int, int>> match = {{0, 0},
                                                                  {0, 0}};
@@ -322,29 +320,29 @@ BranchAndBound::addRemainingEdgesOfOpportunityMatrix(int **matrix, int size, con
 }
 
 // Funkcja pomocnicza zwracajaca pozostale krawedzie macirzy 2x2
-std::vector<std::pair<int, int>> BranchAndBound::getAllRemainingEdges(int **matrix, int size) {
-    std::vector<std::pair<int, int>> rem;
+std::list<std::pair<int, int>> BranchAndBound::getAllRemainingEdges(int **matrix, int size) {
+    std::list<std::pair<int, int>> remaining;
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             if (i == j) continue;
             if (matrix[i][j] != INF) {
-                rem.emplace_back(i, j);
+                remaining.emplace_back(i, j);
             }
         }
     }
-    return rem;
+    return remaining;
 }
 
 // Funkcja pomocnicza do sprawdzenia czy 2 krawedzie wybrane w macierzy 2x2 tworza kompletna sciezke oraz zapisanie sciezki rozwiazania
-bool BranchAndBound::tryMakePath(const std::vector<pair<int, int>> &with, std::pair<int, int> firstPair,
+bool BranchAndBound::tryMakePath(const std::list<pair<int, int>> &with, std::pair<int, int> firstPair,
                                  std::pair<int, int> secondPair) {
-    std::vector<pair<int, int>> tmp = std::vector<pair<int, int>>(with);
+    std::list<pair<int, int>> tmp = std::list<pair<int, int>>(with);
     tmp.push_back(firstPair);
     tmp.push_back(secondPair);
 
-    pair<int, int> firstElement = tmp.at(0);
-    pair<int, int> currentElement = tmp.at(0);
-    std::vector<int> path;
+    pair<int, int> firstElement = tmp.front();
+    pair<int, int> currentElement = tmp.front();
+    std::list<int> path;
     path.push_back(currentElement.first);
     while (path.size() != matrixSize + 1) {
         auto it = std::find_if(tmp.begin(), tmp.end(),
@@ -361,14 +359,14 @@ bool BranchAndBound::tryMakePath(const std::vector<pair<int, int>> &with, std::p
             return false;
         }
     }
-    pathCurrentNode = std::vector<int>(path);
-    vector<int> check;
+    pathCurrentNode = std::list<int>(path);
+    std::list<int> check;
     check.push_back(firstElement.first);
     for (int i = 0; i < matrixSize; i++) {
         check.push_back(i);
     }
-    std::sort(check.begin(), check.end());
-    std::sort(path.begin(), path.end());
+    check.sort();
+    path.sort();
     if (check == path) {
         return true;
     }

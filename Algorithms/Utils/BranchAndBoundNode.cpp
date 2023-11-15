@@ -1,5 +1,5 @@
-#include <algorithm>
 #include "BranchAndBoundNode.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -20,6 +20,5 @@ BranchAndBoundNode::BranchAndBoundNode(BranchAndBoundNode &node) {
     size = node.size;
     lowerBound = node.lowerBound;
     with = node.with;
-    without = node.without;
     subTours = node.subTours;
 }

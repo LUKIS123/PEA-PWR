@@ -7,3 +7,4 @@ cmake-build-debug-mingw
 .vs
 out
 Resources/Tests
+/Resources/Wyniki/

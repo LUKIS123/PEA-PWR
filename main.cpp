@@ -2,8 +2,8 @@
 #include <ctime>
 #include "./Flow/AppController.h"
 
+// Zakladamy ze graf jest pelny i asymetryczny
 int main() {
-    // Zakladamy ze graf jest pelny i asymetryczny
     srand(time(NULL));
 
     auto *appController = new AppController();
