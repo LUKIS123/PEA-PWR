@@ -1,17 +1,14 @@
 #include "AutomaticTests.h"
 
-AutomaticTests::AutomaticTests(RandomDataGenerator *randomDataGenerator,
-                               RandomDataGenerator::generator *generator,
+AutomaticTests::AutomaticTests(RandomDataGenerator::generator *generator,
                                Matrix *matrix,
                                BruteForce *bruteForce, BranchAndBound *branchAndBound,
                                DynamicProgramming *dynamicProgramming) :
-        randomDataGenerator(randomDataGenerator),
         generator(generator),
         matrix(matrix),
         bruteForce(bruteForce),
         branchAndBound(branchAndBound),
         dynamicProgramming(dynamicProgramming) {
-
 }
 
 AutomaticTests::~AutomaticTests() = default;
@@ -45,6 +42,14 @@ void AutomaticTests::initialize() {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Bad entry... Enter a NUMBER: ";
         std::cin >> maxGraphDist;
+    }
+    std::cout << "Time limit (ms): ";
+    std::cin >> testTimeLimit;
+    while (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Bad entry... Enter a NUMBER: ";
+        std::cin >> testTimeLimit;
     }
     matrix->distanceValueLimit = maxGraphDist;
     matrix->generate(graphSize, generator);
@@ -107,7 +112,7 @@ void AutomaticTests::testBruteForce() {
         std::atomic<int> done = 0;
         auto f = p.get_future();
         std::jthread thr(run_bf_fun, bruteForce, matrix, std::ref(done), std::move(p));
-        std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done));
+        std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done), testTimeLimit);
         stop_thr.join();
         thr.join();
         if (done == 1) {
@@ -122,7 +127,6 @@ void AutomaticTests::testBruteForce() {
         }
         matrix->generateAnew(generator);
     }
-
     DataFileUtility::saveAutomaticTestResults(fileName, resultsUS, resultsMS, resultsS, cols);
     std::cout << "Done!" << std::endl;
     system("PAUSE");
@@ -135,20 +139,28 @@ void AutomaticTests::testBranchAndBound() {
     std::vector<double> resultsMS;
     std::vector<double> resultsS;
 
-    long long int start, end;
     double results;
     for (int i = 0; i < testNumber; i++) {
-        start = Timer::read_QPC();
-        branchAndBound->mainFun(matrix, matrix->getSize());
-        end = Timer::read_QPC();
-        results = Timer::getMicroSecondsElapsed(start, end);
-        resultsUS.push_back(results);
-        resultsMS.push_back(results / 1000);
-        resultsS.push_back(results / 1000000);
+        std::promise<double> p;
+        std::atomic<int> done = 0;
+        auto f = p.get_future();
+        std::jthread thr(run_bib_fun, branchAndBound, matrix, std::ref(done), std::move(p));
+        std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done), testTimeLimit);
+        stop_thr.join();
+        thr.join();
+        if (done == 1) {
+            try {
+                results = f.get();
+                resultsUS.push_back(results);
+                resultsMS.push_back(results / 1000);
+                resultsS.push_back(results / 1000000);
+            }
+            catch (...) {
+            }
+        }
         matrix->generateAnew(generator);
     }
     DataFileUtility::saveAutomaticTestResults(fileName, resultsUS, resultsMS, resultsS, cols);
-
     std::cout << "Done!" << std::endl;
     system("PAUSE");
 }
@@ -160,20 +172,28 @@ void AutomaticTests::testDynamic() {
     std::vector<double> resultsMS;
     std::vector<double> resultsS;
 
-    long long int start, end;
     double results;
     for (int i = 0; i < testNumber; i++) {
-        start = Timer::read_QPC();
-        dynamicProgramming->mainFun(matrix, matrix->getSize());
-        end = Timer::read_QPC();
-        results = Timer::getMicroSecondsElapsed(start, end);
-        resultsUS.push_back(results);
-        resultsMS.push_back(results / 1000);
-        resultsS.push_back(results / 1000000);
+        std::promise<double> p;
+        std::atomic<int> done = 0;
+        auto f = p.get_future();
+        std::jthread thr(run_dynamic_fun, dynamicProgramming, matrix, std::ref(done), std::move(p));
+        std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done), testTimeLimit);
+        stop_thr.join();
+        thr.join();
+        if (done == 1) {
+            try {
+                results = f.get();
+                resultsUS.push_back(results);
+                resultsMS.push_back(results / 1000);
+                resultsS.push_back(results / 1000000);
+            }
+            catch (...) {
+            }
+        }
         matrix->generateAnew(generator);
     }
     DataFileUtility::saveAutomaticTestResults(fileName, resultsUS, resultsMS, resultsS, cols);
-
     std::cout << "Done!" << std::endl;
     system("PAUSE");
 }

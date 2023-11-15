@@ -11,8 +11,7 @@ AppController::AppController() {
     branchAndBound = new BranchAndBound();
     dynamicProgramming = new DynamicProgramming();
     // Testy
-    automaticTests = new AutomaticTests(randomDataGenerator, generator, matrix, bruteForce, branchAndBound,
-                                        dynamicProgramming);
+    automaticTests = new AutomaticTests(generator, matrix, bruteForce, branchAndBound, dynamicProgramming);
 }
 
 AppController::~AppController() {
