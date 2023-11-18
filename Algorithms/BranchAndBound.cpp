@@ -2,7 +2,6 @@
 
 #define INF INT_MAX
 
-
 void BranchAndBound::displayLatestResults() {
     std::cout << "Edges:\n";
     for (auto &i: withBest) {
@@ -102,7 +101,7 @@ void BranchAndBound::solveTSP(BranchAndBoundNode *root) {
 
         // Podzial na lewe i prawe poddrzewo
         auto br = splitBranches(node->data, node->size, row, column);
-        auto subToursReduced = buildSubToursFromEdges(std::make_pair(row, column), node->subTours);
+        auto subToursReduced = buildSubToursFromEdges(std::make_pair(row, column), node->subTours, node->data);
         int cl = updateMatrixLeft(br.first, node->size, leftSubtreeEdges, subToursReduced);
         int cr = updateMatrixRight(br.second, node->size, row, column);
 
@@ -197,7 +196,7 @@ int BranchAndBound::updateMatrixRight(int **matrix, int size, int row, int colum
     return reduction;
 }
 
-// Funckja sluzaca do redukcji wierzy macierzy
+// Funckja sluzaca do redukcji wierszy macierzy
 int BranchAndBound::reduceRows(int **matrix, int size) {
     int sum = 0;
     for (int i = 0; i < size; i++) {
@@ -333,7 +332,7 @@ std::list<std::pair<int, int>> BranchAndBound::getAllRemainingEdges(int **matrix
     return remaining;
 }
 
-// Funkcja pomocnicza do sprawdzenia czy 2 krawedzie wybrane w macierzy 2x2 tworza kompletna sciezke oraz zapisanie sciezki rozwiazania
+// Funkcja pomocnicza do utworzenia koncowej sciezki z krawedzi wybranych w macierzy 2x2 oraz zapisanie rozwiazania
 bool BranchAndBound::tryMakePath(const std::list<pair<int, int>> &with, std::pair<int, int> firstPair,
                                  std::pair<int, int> secondPair) {
     std::list<pair<int, int>> tmp = std::list<pair<int, int>>(with);
@@ -360,11 +359,9 @@ bool BranchAndBound::tryMakePath(const std::list<pair<int, int>> &with, std::pai
         }
     }
     pathCurrentNode = std::list<int>(path);
-    std::list<int> check;
+    std::list<int> check(matrixSize);
+    std::iota(std::begin(check), std::end(check), 0);
     check.push_back(firstElement.first);
-    for (int i = 0; i < matrixSize; i++) {
-        check.push_back(i);
-    }
     check.sort();
     path.sort();
     if (check == path) {
@@ -375,7 +372,7 @@ bool BranchAndBound::tryMakePath(const std::list<pair<int, int>> &with, std::pai
 
 // Funkcja sluzaca do budowania lancuchow podsciezek w celu zablokowania zapetlania sie sciezek
 std::list<std::list<int>>
-BranchAndBound::buildSubToursFromEdges(std::pair<int, int> edge, const list<std::list<int>> &subTours) {
+BranchAndBound::buildSubToursFromEdges(std::pair<int, int> edge, const list<std::list<int>> &subTours, int **matrix) {
     std::list<std::list<int>> subToursNew = subTours;
     // Jesli wezel drzewa nie posiada zadnych krawedzi sciezki
     if (subTours.empty()) {
@@ -391,11 +388,13 @@ BranchAndBound::buildSubToursFromEdges(std::pair<int, int> edge, const list<std:
         if (item.back() == edge.first) {
             item.push_back(edge.second);
             isAdded = true;
+            blockLoopFormation(item, matrix);
             break;
         }
         if (item.front() == edge.second) {
             item.push_front(edge.first);
             isAdded = true;
+            blockLoopFormation(item, matrix);
             break;
         }
     }
@@ -419,14 +418,17 @@ BranchAndBound::buildSubToursFromEdges(std::pair<int, int> edge, const list<std:
                     currentIt->push_back(v);
                 }
                 tmp.erase(std::remove(tmp.begin(), tmp.end(), item), tmp.end());
+                blockLoopFormation(*currentIt, matrix);
                 break;
             }
             if (item.back() == currentTour.front()) {
-                for (const auto &v: item) {
-                    if (v == item.back()) continue;
-                    currentIt->push_front(v);
+                auto revItemIt = item.rbegin();
+                for (; revItemIt != item.rend(); revItemIt++) {
+                    if (*revItemIt == item.back()) continue;
+                    currentIt->push_front(*revItemIt);
                 }
                 tmp.erase(std::remove(tmp.begin(), tmp.end(), item), tmp.end());
+                blockLoopFormation(*currentIt, matrix);
                 break;
             }
         }
@@ -434,4 +436,18 @@ BranchAndBound::buildSubToursFromEdges(std::pair<int, int> edge, const list<std:
         result = tmp;
     }
     return result;
+}
+
+// Funkcja pomocnicza sluzaca do zablokowania powstawania petli nie bedacych cyklem Hamiltona
+void BranchAndBound::blockLoopFormation(std::list<int> subPath, int **matrix) {
+    for (int i = 0; i < subPath.size() - 2; i++) {
+        auto itCurrent = subPath.begin();
+        std::advance(itCurrent, i);
+        auto itNext = subPath.begin();
+        std::advance(itNext, i + 1);
+        while (itNext != subPath.end()) {
+            matrix[*itNext][*itCurrent] = INF;
+            ++itNext;
+        }
+    }
 }

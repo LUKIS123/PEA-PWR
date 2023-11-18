@@ -53,7 +53,9 @@ public:
     bool tryMakePath(const std::list<pair<int, int>> &with, pair<int, int> firstPair, pair<int, int> secondPair);
 
     static std::list<std::list<int>>
-    buildSubToursFromEdges(std::pair<int, int> edge, const list<std::list<int>> &subTours);
+    buildSubToursFromEdges(std::pair<int, int> edge, const list<std::list<int>> &subTours, int **matrix);
+
+    static void blockLoopFormation(std::list<int> subPath, int **matrix);
 };
 
 

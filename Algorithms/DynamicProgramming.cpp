@@ -48,49 +48,6 @@ void DynamicProgramming::solve(int start) {
 
     distanceBest = TSP(START_NODE, state);
 
-//    std::cout << "  ";
-//    for (int i = 0; i < matrixSize; i++) {
-//        if (i > 10) std::cout << " ";
-//        else std::cout << "  ";
-//        std::cout << i;
-//    }
-//    std::cout << "\n\n";
-//    for (int i = 0; i < matrixSize; i++) {
-//        std::cout << i;
-//        if (i < 10) std::cout << " ";
-//        for (int j = 0; j < 1 << matrixSize; j++) {
-//            std::cout << "  ";
-//            if (previous[i][j] != INT_MIN) {
-//                std::cout << previous[i][j];
-//            } else {
-//                std::cout << "X";
-//            }
-//
-//        }
-//        std::cout << std::endl;
-//    }
-//    std::cout << "  ";
-//    for (int i = 0; i < matrixSize; i++) {
-//        if (i > 10) std::cout << " ";
-//        else std::cout << "  ";
-//        std::cout << i;
-//    }
-//    std::cout << "\n\n";
-//    for (int i = 0; i < matrixSize; i++) {
-//        std::cout << i;
-//        if (i < 10) std::cout << " ";
-//        for (int j = 0; j < 1 << matrixSize; j++) {
-//            std::cout << "  ";
-//            if (cache[i][j] != INT_MIN) {
-//                std::cout << cache[i][j];
-//            } else {
-//                std::cout << "X";
-//            }
-//
-//        }
-//        std::cout << std::endl;
-//    }
-
     // Odtwarzanie wyznaczonej sciezki zaczynajac od wierzcholka startowego
     int index = START_NODE;
     while (true) {
@@ -175,10 +132,3 @@ void DynamicProgramming::clearData() {
         previous = nullptr;
     }
 }
-
-/*
- * czego użyłem jako listy odwiedzonych wierzcholkow i jak to dziala
- * jak sie zapisuje ta najlepsza sciezke
- * dla ilu max wierzcholkow mozna ten algorytm zrobic
- * ogół działania
- */
