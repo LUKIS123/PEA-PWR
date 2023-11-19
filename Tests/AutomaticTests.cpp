@@ -94,7 +94,7 @@ void AutomaticTests::updateTestCount() {
 }
 
 void AutomaticTests::testBruteForce() {
-    std::string fileName = "../Resources/Tests/BruteForce.csv";
+    std::string fileName = "./BruteForce.csv";
     std::string cols = "us,ms,s";
     std::vector<double> resultsUS;
     std::vector<double> resultsMS;
@@ -127,7 +127,7 @@ void AutomaticTests::testBruteForce() {
 }
 
 void AutomaticTests::testBranchAndBound() {
-    std::string fileName = "../Resources/Tests/BBLittle.csv";
+    std::string fileName = "./BBLittle.csv";
     std::string cols = "us,ms,s";
     std::vector<double> resultsUS;
     std::vector<double> resultsMS;
