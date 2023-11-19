@@ -16,7 +16,6 @@
 #include "../Matrix/Matrix.h"
 #include "../Algorithms/BruteForce.h"
 #include "../Algorithms/BranchAndBound.h"
-#include "../Algorithms/DynamicProgramming.h"
 
 
 class AutomaticTests {
@@ -30,11 +29,10 @@ private:
     Matrix *matrix = nullptr;
     BruteForce *bruteForce = nullptr;
     BranchAndBound *branchAndBound = nullptr;
-    DynamicProgramming *dynamicProgramming = nullptr;
 
 public:
     AutomaticTests(RandomDataGenerator::generator *generator, Matrix *matrix,
-                   BruteForce *bruteForce, BranchAndBound *branchAndBound, DynamicProgramming *dynamicProgramming);
+                   BruteForce *bruteForce, BranchAndBound *branchAndBound);
 
     virtual ~AutomaticTests();
 
@@ -47,8 +45,6 @@ public:
     void updateTestCount();
 
     void testBranchAndBound();
-
-    void testDynamic();
 
     // Multithreading
     static void stop_thr_fun(std::jthread &th, std::atomic<int> &stop, int testTimeLimit) {
@@ -83,19 +79,6 @@ public:
         long long int start, end;
         start = Timer::read_QPC();
         branchAndBound->mainFun(pMatrix, pMatrix->getSize());
-        end = Timer::read_QPC();
-        if (finished != 2) {
-            finished = 1;
-        }
-        p.set_value(Timer::getMicroSecondsElapsed(start, end));
-    };
-
-    static void
-    run_dynamic_fun(DynamicProgramming *dynamicProgramming, Matrix *pMatrix, std::atomic<int> &finished,
-                    std::promise<double> &&p) {
-        long long int start, end;
-        start = Timer::read_QPC();
-        dynamicProgramming->mainFun(pMatrix, pMatrix->getSize());
         end = Timer::read_QPC();
         if (finished != 2) {
             finished = 1;

@@ -18,16 +18,14 @@ public:
         RUN_BRUTE_FORCE = 2,
         RUN_BRUTE_FORCE_OPT = 3,
         RUN_BRANCH_AND_BOUND = 4,
-        RUN_DYNAMIC = 5,
-        DISPLAY_LATEST_RESULTS = 6
+        DISPLAY_LATEST_RESULTS = 5
     };
     enum automaticTestsMenu {
         END_TEST = 0,
         MENU_TEST = 1,
         SET_TEST_COUNT = 2,
         TEST_BRUTE_FORCE = 3,
-        TEST_BRANCH_AND_BOUND = 4,
-        TEST_DYNAMIC = 5
+        TEST_BRANCH_AND_BOUND = 4
     };
 };
 

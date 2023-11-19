@@ -2,13 +2,11 @@
 
 AutomaticTests::AutomaticTests(RandomDataGenerator::generator *generator,
                                Matrix *matrix,
-                               BruteForce *bruteForce, BranchAndBound *branchAndBound,
-                               DynamicProgramming *dynamicProgramming) :
+                               BruteForce *bruteForce, BranchAndBound *branchAndBound) :
         generator(generator),
         matrix(matrix),
         bruteForce(bruteForce),
-        branchAndBound(branchAndBound),
-        dynamicProgramming(dynamicProgramming) {
+        branchAndBound(branchAndBound) {
 }
 
 AutomaticTests::~AutomaticTests() = default;
@@ -68,10 +66,6 @@ void AutomaticTests::menu() {
                 break;
             case ActionResult::TEST_BRANCH_AND_BOUND:
                 testBranchAndBound();
-                status = ActionResult::MENU_TEST;
-                break;
-            case ActionResult::TEST_DYNAMIC:
-                testDynamic();
                 status = ActionResult::MENU_TEST;
                 break;
             case ActionResult::SET_TEST_COUNT:
@@ -145,39 +139,6 @@ void AutomaticTests::testBranchAndBound() {
         std::atomic<int> done = 0;
         auto f = p.get_future();
         std::jthread thr(run_bib_fun, branchAndBound, matrix, std::ref(done), std::move(p));
-        std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done), testTimeLimit);
-        stop_thr.join();
-        thr.join();
-        if (done == 1) {
-            try {
-                results = f.get();
-                resultsUS.push_back(results);
-                resultsMS.push_back(results / 1000);
-                resultsS.push_back(results / 1000000);
-            }
-            catch (...) {
-            }
-        }
-        matrix->generateAnew(generator);
-    }
-    DataFileUtility::saveAutomaticTestResults(fileName, resultsUS, resultsMS, resultsS, cols);
-    std::cout << "Done!" << std::endl;
-    system("PAUSE");
-}
-
-void AutomaticTests::testDynamic() {
-    std::string fileName = "../Resources/Tests/DynamicP.csv";
-    std::string cols = "us,ms,s";
-    std::vector<double> resultsUS;
-    std::vector<double> resultsMS;
-    std::vector<double> resultsS;
-
-    double results;
-    for (int i = 0; i < testNumber; i++) {
-        std::promise<double> p;
-        std::atomic<int> done = 0;
-        auto f = p.get_future();
-        std::jthread thr(run_dynamic_fun, dynamicProgramming, matrix, std::ref(done), std::move(p));
         std::jthread stop_thr(stop_thr_fun, std::ref(thr), std::ref(done), testTimeLimit);
         stop_thr.join();
         thr.join();

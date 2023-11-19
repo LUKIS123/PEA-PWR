@@ -44,8 +44,7 @@ ActionResult::algorithmsMenu ConsoleView::algorithmsMenu() {
     std::cout << "1 => Run BRUTE FORCE" << std::endl;
     std::cout << "2 => Run BRUTE FORCE with Optimization" << std::endl;
     std::cout << "3 => Run BRANCH AND BOUND" << std::endl;
-    std::cout << "4 => Run DYNAMIC PROGRAMMING" << std::endl;
-    std::cout << "5 => Display latest results" << std::endl;
+    std::cout << "4 => Display latest results" << std::endl;
     std::cout << "0 => Return" << std::endl;
 
     std::cout << "Choice: ";
@@ -66,8 +65,6 @@ ActionResult::algorithmsMenu ConsoleView::algorithmsMenu() {
         case 3:
             return ActionResult::RUN_BRANCH_AND_BOUND;
         case 4:
-            return ActionResult::RUN_DYNAMIC;
-        case 5:
             return ActionResult::DISPLAY_LATEST_RESULTS;
         case 0:
             return ActionResult::END_ALGORITHMS_MENU;
@@ -81,8 +78,7 @@ ActionResult::automaticTestsMenu ConsoleView::automaticTestsMenu() {
     std::cout << "AUTOMATIC TESTS: Choose from given options..." << std::endl;
     std::cout << "1 => Test BRUTE FORCE" << std::endl;
     std::cout << "2 => Test BRANCH AND BOUND" << std::endl;
-    std::cout << "3 => Test DYNAMIC PROGRAMMING" << std::endl;
-    std::cout << "4 => Change Test Count" << std::endl;
+    std::cout << "3 => Change Test Count" << std::endl;
     std::cout << "0 => Exit" << std::endl;
 
     std::cout << "Choice: ";
@@ -101,8 +97,6 @@ ActionResult::automaticTestsMenu ConsoleView::automaticTestsMenu() {
         case 2:
             return ActionResult::automaticTestsMenu::TEST_BRANCH_AND_BOUND;
         case 3:
-            return ActionResult::automaticTestsMenu::TEST_DYNAMIC;
-        case 4:
             return ActionResult::automaticTestsMenu::SET_TEST_COUNT;
         case 0:
             return ActionResult::automaticTestsMenu::END_TEST;

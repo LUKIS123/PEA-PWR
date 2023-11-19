@@ -11,7 +11,6 @@
 #include "../Matrix/Matrix.h"
 #include "../Algorithms/BruteForce.h"
 #include "../Algorithms/BranchAndBound.h"
-#include "../Algorithms/DynamicProgramming.h"
 
 
 class AppController {
@@ -22,13 +21,11 @@ private:
     Matrix *matrix = nullptr;
     BruteForce *bruteForce = nullptr;
     BranchAndBound *branchAndBound = nullptr;
-    DynamicProgramming *dynamicProgramming = nullptr;
 
-    std::string algorithmTypes[4] = {
+    std::string algorithmTypes[3] = {
             "BRUTE FORCE",
             "BRUTE FORCE OPTIMIZED",
             "BRANCH AND BOUND",
-            "DYNAMIC PROGRAMMING"
     };
     LatestAlgorithm latestRun = LatestAlgorithm::NONE;
     double latestTimerResult = 0.0;
@@ -53,8 +50,6 @@ public:
     void runBruteForce(bool ifOptimizedAlgorithm);
 
     void runBranchAndBound();
-
-    void runDynamic();
 
     void displayLatestResults();
 };

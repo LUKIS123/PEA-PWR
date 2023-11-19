@@ -9,9 +9,8 @@ AppController::AppController() {
     matrix = new Matrix();
     bruteForce = new BruteForce();
     branchAndBound = new BranchAndBound();
-    dynamicProgramming = new DynamicProgramming();
     // Testy
-    automaticTests = new AutomaticTests(generator, matrix, bruteForce, branchAndBound, dynamicProgramming);
+    automaticTests = new AutomaticTests(generator, matrix, bruteForce, branchAndBound);
 }
 
 AppController::~AppController() {
@@ -118,10 +117,6 @@ void AppController::algorithmMenu() {
                 runBranchAndBound();
                 status = ActionResult::BACK_TO_ALGORITHMS_MENU;
                 break;
-            case ActionResult::RUN_DYNAMIC:
-                runDynamic();
-                status = ActionResult::BACK_TO_ALGORITHMS_MENU;
-                break;
             case ActionResult::DISPLAY_LATEST_RESULTS:
                 displayLatestResults();
                 status = ActionResult::BACK_TO_ALGORITHMS_MENU;
@@ -170,20 +165,6 @@ void AppController::runBranchAndBound() {
     system("PAUSE");
 }
 
-void AppController::runDynamic() {
-    long long start = Timer::read_QPC();
-    dynamicProgramming->mainFun(matrix, matrix->getSize());
-    long long end = Timer::read_QPC();
-    latestTimerResult = Timer::getMicroSecondsElapsed(start, end);
-    latestRun = LatestAlgorithm::DYNAMIC;
-
-    dynamicProgramming->displayLatestResults();
-    std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
-    std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;
-    std::cout << "     : " << latestTimerResult / 1000000 << " s" << std::endl;
-    system("PAUSE");
-}
-
 void AppController::displayLatestResults() {
     std::cout << "algorithm: ";
     switch (latestRun) {
@@ -196,9 +177,6 @@ void AppController::displayLatestResults() {
         case BRANCH_AND_BOUND:
             std::cout << algorithmTypes[2] << std::endl;
             break;
-        case DYNAMIC:
-            std::cout << algorithmTypes[3] << std::endl;
-            break;
         default:
             break;
     }
@@ -207,9 +185,6 @@ void AppController::displayLatestResults() {
     }
     if (latestRun == LatestAlgorithm::BRANCH_AND_BOUND) {
         branchAndBound->displayLatestResults();
-    }
-    if (latestRun == LatestAlgorithm::DYNAMIC) {
-        dynamicProgramming->displayLatestResults();
     }
     std::cout << "Timer: " << latestTimerResult << " us" << std::endl;
     std::cout << "     : " << latestTimerResult / 1000 << " ms" << std::endl;

@@ -30,8 +30,6 @@ add_executable(PEA_PWR main.cpp
         Algorithms/BranchAndBound.cpp
         Algorithms/Utils/BranchAndBoundNode.h
         Algorithms/Utils/BranchAndBoundNode.cpp
-        Algorithms/DynamicProgramming.h
-        Algorithms/DynamicProgramming.cpp
         FileUtils/DataFileUtility.cpp
         FileUtils/DataFileUtility.h
 )
